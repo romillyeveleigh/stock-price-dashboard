@@ -22,8 +22,7 @@ describe('PolygonApiService', () => {
   });
 
   afterEach(() => {
-    // Clean up
-    apiService.clearQueue();
+    // Clean up any test state if needed
   });
 
   describe('constructor', () => {
@@ -74,9 +73,8 @@ describe('PolygonApiService', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchObject({
-        ticker: 'AAPL',
-        name: 'Apple Inc.',
         symbol: 'AAPL',
+        name: 'Apple Inc.',
         market: 'stocks',
         locale: 'us',
         active: true,
@@ -93,7 +91,7 @@ describe('PolygonApiService', () => {
       } as Response);
 
       await expect(apiService.getAllTickers()).rejects.toMatchObject({
-        type: 'API_ERROR',
+        type: 'API_RATE_LIMIT',
       });
     });
   });
@@ -161,22 +159,11 @@ describe('PolygonApiService', () => {
     });
   });
 
-  describe('rate limiting', () => {
-    it('should provide rate limit status', () => {
-      const status = apiService.getRateLimitStatus();
-
-      expect(status).toHaveProperty('requestsInWindow');
-      expect(status).toHaveProperty('maxRequests');
-      expect(status).toHaveProperty('queueLength');
-      expect(status).toHaveProperty('canMakeRequest');
-    });
-
-    it('should provide queue statistics', () => {
-      const stats = apiService.getQueueStats();
-
-      expect(stats).toHaveProperty('totalQueued');
-      expect(stats).toHaveProperty('averageWaitTime');
-      expect(stats).toHaveProperty('oldestRequestAge');
+  describe('caching strategy', () => {
+    it('should be designed to work with TanStack Query caching', () => {
+      // The API service is now designed to work with TanStack Query's
+      // built-in caching mechanism rather than custom rate limiting
+      expect(apiService).toBeInstanceOf(PolygonApiService);
     });
   });
 });

@@ -17,16 +17,18 @@ export interface ApiError {
 }
 
 // Error types for different scenarios
-export enum ErrorType {
-  API_RATE_LIMIT = 'API_RATE_LIMIT',
-  API_ERROR = 'API_ERROR',
-  NETWORK_ERROR = 'NETWORK_ERROR',
-  INVALID_DATE_RANGE = 'INVALID_DATE_RANGE',
-  NO_DATA_AVAILABLE = 'NO_DATA_AVAILABLE',
-  STOCK_LIMIT_EXCEEDED = 'STOCK_LIMIT_EXCEEDED',
-  INVALID_STOCK_SYMBOL = 'INVALID_STOCK_SYMBOL',
-  UNAUTHORIZED = 'UNAUTHORIZED',
-}
+export const ErrorType = {
+  API_RATE_LIMIT: 'API_RATE_LIMIT',
+  API_ERROR: 'API_ERROR',
+  NETWORK_ERROR: 'NETWORK_ERROR',
+  INVALID_DATE_RANGE: 'INVALID_DATE_RANGE',
+  NO_DATA_AVAILABLE: 'NO_DATA_AVAILABLE',
+  STOCK_LIMIT_EXCEEDED: 'STOCK_LIMIT_EXCEEDED',
+  INVALID_STOCK_SYMBOL: 'INVALID_STOCK_SYMBOL',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+} as const;
+
+export type ErrorType = (typeof ErrorType)[keyof typeof ErrorType];
 
 // Application error with context
 export interface AppError {

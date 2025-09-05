@@ -2,7 +2,7 @@
  * UI-related types for components and state management
  */
 
-import type { AppError } from './api';
+// import type { AppError } from './api'; // Unused for now
 import type { PriceType, Stock, StockPriceData, DateRange } from './stock';
 
 // Loading states
@@ -15,7 +15,7 @@ export interface AppState {
   priceType: PriceType;
   chartData: StockPriceData[];
   loading: boolean;
-  error: AppError | null;
+  error: string | null;
   stockSuggestions: Stock[];
 }
 
@@ -27,7 +27,7 @@ export type AppAction =
   | { type: 'SET_PRICE_TYPE'; payload: PriceType }
   | { type: 'SET_CHART_DATA'; payload: StockPriceData[] }
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: AppError | null }
+  | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_STOCK_SUGGESTIONS'; payload: Stock[] }
   | { type: 'RESET_STATE' };
 

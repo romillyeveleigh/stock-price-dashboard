@@ -1,7 +1,7 @@
 /**
  * Production-grade Polygon API service with optimized fetch implementation
  * BUNDLE OPTIMIZATION: Uses native fetch instead of 1.37MB SDK
- * STABILITY: Zero retries for rate limit errors to prevent cascading failures
+ * STABILITY: TanStack Query caching prevents redundant API calls
  */
 
 import { format } from 'date-fns';
@@ -16,17 +16,13 @@ import type {
 } from '@/types';
 import { ErrorType } from '@/types';
 
-import { RateLimitManager } from './rateLimitManager';
-
 export class PolygonApiService {
   private baseUrl: string;
   private apiKey: string;
-  private rateLimitManager: RateLimitManager;
 
   constructor() {
     this.baseUrl = API_CONFIG.baseUrl;
     this.apiKey = this.getSecureApiKey();
-    this.rateLimitManager = new RateLimitManager(API_CONFIG.rateLimit);
   }
 
   /**
@@ -34,122 +30,118 @@ export class PolygonApiService {
    * CRITICAL: Single API call on app load, then client-side search to minimize API usage
    */
   async getAllTickers(): Promise<USStock[]> {
-    return this.rateLimitManager.execute(async () => {
-      try {
-        const url = this.buildUrl('/v3/reference/tickers', {
-          market: 'stocks',
-          active: 'true',
-          limit: '1000',
-          sort: 'ticker',
-        });
+    try {
+      const url = this.buildUrl('/v3/reference/tickers', {
+        market: 'stocks',
+        active: 'true',
+        limit: '1000',
+        sort: 'ticker',
+      });
 
-        const response = await this.fetchWithTimeout(url);
+      const response = await this.fetchWithTimeout(url);
 
-        if (!response.ok) {
-          throw await this.handleHttpError(response);
-        }
+      if (!response.ok) {
+        throw await this.handleHttpError(response);
+      }
 
-        const data: PolygonTickersResponse = await response.json();
+      const data: PolygonTickersResponse = await response.json();
 
-        if (!data.results) {
-          throw this.createAppError(
-            ErrorType.NO_DATA_AVAILABLE,
-            'No ticker data received from API'
-          );
-        }
-
-        // Filter for US common stocks only
-        return data.results
-          .filter(
-            ticker =>
-              ticker.market === 'stocks' &&
-              ticker.locale === 'us' &&
-              ticker.active &&
-              ticker.type === 'CS' // Common stock
-          )
-          .map(ticker => ({
-            ticker: ticker.ticker,
-            name: ticker.name,
-            market: ticker.market as 'stocks',
-            locale: ticker.locale as 'us',
-            active: ticker.active,
-            type: ticker.type,
-            primaryExchange: ticker.primary_exchange,
-            symbol: ticker.ticker, // Alias for compatibility
-          }));
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('AppError')) {
-          throw error;
-        }
-
+      if (!data.results) {
         throw this.createAppError(
-          ErrorType.API_ERROR,
-          `Failed to fetch ticker list: ${(error as Error).message}`,
-          error
+          ErrorType.NO_DATA_AVAILABLE,
+          'No ticker data received from API'
         );
       }
-    });
+
+      // Filter for US common stocks only
+      return data.results
+        .filter(
+          ticker =>
+            ticker.market === 'stocks' &&
+            ticker.locale === 'us' &&
+            ticker.active &&
+            ticker.type === 'CS' // Common stock
+        )
+        .map(ticker => ({
+          symbol: ticker.ticker, // Use symbol as the primary property
+          name: ticker.name,
+          market: ticker.market as 'stocks',
+          locale: ticker.locale as 'us',
+          active: ticker.active,
+          type: ticker.type,
+          primaryExchange: ticker.primary_exchange,
+        }));
+    } catch (error) {
+      // Re-throw AppError instances directly
+      if (error && typeof error === 'object' && 'type' in error) {
+        throw error;
+      }
+
+      throw this.createAppError(
+        ErrorType.API_ERROR,
+        `Failed to fetch ticker list: ${(error as Error).message}`,
+        error
+      );
+    }
   }
 
   /**
    * Gets stock prices using aggregates endpoint with bundle-optimized approach
-   * STABILITY: Conservative caching and zero retries on rate limits
+   * STABILITY: TanStack Query caching prevents redundant API calls
    */
   async getStockPrices(
     symbol: string,
     from: Date,
     to: Date
   ): Promise<StockPriceData> {
-    return this.rateLimitManager.execute(async () => {
-      try {
-        const fromStr = format(from, 'yyyy-MM-dd');
-        const toStr = format(to, 'yyyy-MM-dd');
+    try {
+      const fromStr = format(from, 'yyyy-MM-dd');
+      const toStr = format(to, 'yyyy-MM-dd');
 
-        const url = this.buildUrl(
-          `/v2/aggs/ticker/${symbol}/range/1/day/${fromStr}/${toStr}`,
-          {
-            adjusted: 'true',
-            sort: 'asc',
-            limit: '5000',
-          }
-        );
-
-        const response = await this.fetchWithTimeout(url);
-
-        if (!response.ok) {
-          throw await this.handleHttpError(response, symbol);
+      const url = this.buildUrl(
+        `/v2/aggs/ticker/${symbol}/range/1/day/${fromStr}/${toStr}`,
+        {
+          adjusted: 'true',
+          sort: 'asc',
+          limit: '5000',
         }
+      );
 
-        const data: PolygonAggregatesResponse = await response.json();
+      const response = await this.fetchWithTimeout(url);
 
-        if (data.status !== 'OK') {
-          throw this.createAppError(
-            ErrorType.API_ERROR,
-            `API returned status: ${data.status}`,
-            data
-          );
-        }
+      if (!response.ok) {
+        throw await this.handleHttpError(response, symbol);
+      }
 
-        if (!data.results || data.results.length === 0) {
-          return {
-            symbol: symbol,
-            data: [],
-          };
-        }
+      const data: PolygonAggregatesResponse = await response.json();
 
-        return this.transformAggregatesData(data);
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('AppError')) {
-          throw error;
-        }
-
+      if (data.status !== 'OK') {
         throw this.createAppError(
           ErrorType.API_ERROR,
-          `Failed to fetch stock prices for ${symbol}: ${(error as Error).message}`,
-          error
+          `API returned status: ${data.status}`,
+          data
         );
       }
-    });
+      if (!data.results || data.results.length === 0) {
+        return {
+          symbol: symbol,
+          data: [],
+        };
+      }
+
+      return this.transformAggregatesData(data);
+    } catch (error) {
+      // Re-throw AppError instances directly
+      if (error && typeof error === 'object' && 'type' in error) {
+        throw error;
+      }
+
+      throw this.createAppError(
+        ErrorType.API_ERROR,
+        `Failed to fetch stock prices for ${symbol}: ${(error as Error).message}`,
+        error
+      );
+    }
   }
 
   /**
@@ -259,9 +251,8 @@ export class PolygonApiService {
           symbol,
         });
     }
-  }
-
-  /**
+  } /*
+   *
    * Transforms Polygon aggregates data to our internal format
    */
   private transformAggregatesData(
@@ -270,7 +261,7 @@ export class PolygonApiService {
     return {
       symbol: response.ticker,
       data: response.results.map(result => ({
-        date: new Date(result.t).toISOString().split('T')[0], // Convert timestamp to YYYY-MM-DD
+        date: new Date(result.t).toISOString().split('T')[0],
         open: result.o,
         high: result.h,
         low: result.l,
@@ -312,26 +303,5 @@ export class PolygonApiService {
       details,
       timestamp: new Date(),
     };
-  }
-
-  /**
-   * Gets rate limit status
-   */
-  getRateLimitStatus() {
-    return this.rateLimitManager.getStatus();
-  }
-
-  /**
-   * Gets queue statistics
-   */
-  getQueueStats() {
-    return this.rateLimitManager.getQueueStats();
-  }
-
-  /**
-   * Clears the request queue (useful for cleanup)
-   */
-  clearQueue(): void {
-    this.rateLimitManager.clearQueue();
   }
 }

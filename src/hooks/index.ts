@@ -8,10 +8,14 @@ export {
   useStockSearch,
   useStockPrices,
   useMultipleStockPrices,
-  useRateLimitStatus,
-  useApiQueueStats,
   usePopularStocks,
 } from './useStockData';
+
+// State management hooks
+export { useStockSelection } from './useStockSelection';
+export { useDateRange } from './useDateRange';
+export { usePriceType } from './usePriceType';
+export { useUrlSync } from './useUrlSync';
 
 // Utility hooks
 export { useDebounce } from './useDebounce';

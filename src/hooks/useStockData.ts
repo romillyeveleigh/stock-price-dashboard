@@ -1,6 +1,6 @@
 /**
  * Custom hooks for stock data with TanStack Query integration
- * CRITICAL: Rate limit aware with conservative caching and zero retries on rate limits
+ * STRATEGY: Client-side caching with TanStack Query prevents redundant API calls
  */
 
 import { useQuery, useQueries } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import type { DateRange, StockPriceData, USStock } from '@/types';
 
 import { PolygonApiService } from '../services/polygonApi';
 
-// Singleton instance to maintain rate limiting across the app
+// Singleton instance for API calls
 const polygonApi = new PolygonApiService();
 
 /**
@@ -25,9 +25,10 @@ export function useAllTickers() {
     staleTime: 24 * 60 * 60 * 1000, // 24 hours - ticker list changes infrequently
     gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days - keep cached for a week
     retry: (failureCount, error) => {
-      // Never retry rate limit errors to prevent cascading failures
-      if (error?.message?.includes('API_RATE_LIMIT')) return false;
-      if (error?.message?.includes('UNAUTHORIZED')) return false;
+      // Never retry rate limit errors to prevent API spam
+      if ((error as Error)?.message?.includes('rate limit')) return false;
+      if ((error as Error)?.message?.includes('API_RATE_LIMIT')) return false;
+      if ((error as Error)?.message?.includes('UNAUTHORIZED')) return false;
       return failureCount < 2; // Conservative retry for other errors
     },
     refetchOnWindowFocus: false, // Don't refetch on window focus
@@ -50,34 +51,34 @@ export function useStockSearch(query: string, allTickers: USStock[] = []) {
     return allTickers
       .filter(
         stock =>
-          stock.ticker.toLowerCase().includes(searchTerm) ||
+          stock.symbol.toLowerCase().includes(searchTerm) ||
           stock.name.toLowerCase().includes(searchTerm)
       )
       .slice(0, 10) // Limit results for performance
       .sort((a, b) => {
-        // Prioritize ticker symbol matches
-        const aTickerMatch = a.ticker.toLowerCase().startsWith(searchTerm);
-        const bTickerMatch = b.ticker.toLowerCase().startsWith(searchTerm);
+        // Prioritize symbol matches
+        const aSymbolMatch = a.symbol.toLowerCase().startsWith(searchTerm);
+        const bSymbolMatch = b.symbol.toLowerCase().startsWith(searchTerm);
 
-        if (aTickerMatch && !bTickerMatch) return -1;
-        if (!aTickerMatch && bTickerMatch) return 1;
+        if (aSymbolMatch && !bSymbolMatch) return -1;
+        if (!aSymbolMatch && bSymbolMatch) return 1;
 
         // Then prioritize exact matches
-        const aExactMatch = a.ticker.toLowerCase() === searchTerm;
-        const bExactMatch = b.ticker.toLowerCase() === searchTerm;
+        const aExactMatch = a.symbol.toLowerCase() === searchTerm;
+        const bExactMatch = b.symbol.toLowerCase() === searchTerm;
 
         if (aExactMatch && !bExactMatch) return -1;
         if (!aExactMatch && bExactMatch) return 1;
 
         // Finally sort alphabetically
-        return a.ticker.localeCompare(b.ticker);
+        return a.symbol.localeCompare(b.symbol);
       });
   }, [query, allTickers]);
 }
 
 /**
- * Hook to fetch stock prices with rate limit awareness
- * STABILITY: Conservative caching with intelligent error handling
+ * Hook to fetch stock prices with TanStack Query caching
+ * STRATEGY: 60-second staleTime prevents redundant API calls for same stock/date combinations
  */
 export function useStockPrices(
   symbol: string,
@@ -94,21 +95,22 @@ export function useStockPrices(
     queryFn: () =>
       polygonApi.getStockPrices(symbol, dateRange.from, dateRange.to),
     enabled: enabled && !!symbol,
-    staleTime: APP_CONFIG.CACHE_DURATION, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    staleTime: 60 * 1000, // 1 minute - prevents repeat calls within rate limit window
+    gcTime: 30 * 60 * 1000, // 30 minutes - keep in memory longer
     retry: (failureCount, error) => {
-      // Never retry rate limit errors
-      if (error?.message?.includes('API_RATE_LIMIT')) return false;
-      if (error?.message?.includes('UNAUTHORIZED')) return false;
-      return failureCount < 1; // Very conservative retry
+      // Never retry rate limit errors to avoid API spam
+      if ((error as Error)?.message?.includes('rate limit')) return false;
+      if ((error as Error)?.message?.includes('API_RATE_LIMIT')) return false;
+      if ((error as Error)?.message?.includes('UNAUTHORIZED')) return false;
+      return failureCount < 2; // Limited retries for other errors
     },
     refetchOnWindowFocus: false,
   });
 }
 
 /**
- * Hook to fetch multiple stock prices efficiently
- * EFFICIENCY: Batches requests with proper rate limiting
+ * Hook to fetch multiple stock prices efficiently with TanStack Query caching
+ * STRATEGY: Each stock gets its own query with 60-second cache to prevent redundant calls
  */
 export function useMultipleStockPrices(
   symbols: string[],
@@ -125,14 +127,15 @@ export function useMultipleStockPrices(
       ],
       queryFn: () =>
         polygonApi.getStockPrices(symbol, dateRange.from, dateRange.to),
-      enabled: enabled && symbols.length > 0,
-      staleTime: APP_CONFIG.CACHE_DURATION,
-      gcTime: 30 * 60 * 1000,
+      enabled: enabled && symbols.length > 0 && symbols.length <= 3, // Limit to 3 stocks
+      staleTime: 60 * 1000, // 1 minute cache per stock/date combination
+      gcTime: 30 * 60 * 1000, // 30 minutes in memory
       retry: (failureCount: number, error: unknown) => {
-        // Never retry rate limit errors
+        // Never retry rate limit errors to avoid API spam
+        if ((error as Error)?.message?.includes('rate limit')) return false;
         if ((error as Error)?.message?.includes('API_RATE_LIMIT')) return false;
         if ((error as Error)?.message?.includes('UNAUTHORIZED')) return false;
-        return failureCount < 1;
+        return failureCount < 2; // Limited retries for other errors
       },
       refetchOnWindowFocus: false,
     })),
@@ -160,24 +163,6 @@ export function useMultipleStockPrices(
 }
 
 /**
- * Hook to get API rate limit status
- */
-export function useRateLimitStatus() {
-  return useMemo(() => {
-    return polygonApi.getRateLimitStatus();
-  }, []);
-}
-
-/**
- * Hook to get API queue statistics
- */
-export function useApiQueueStats() {
-  return useMemo(() => {
-    return polygonApi.getQueueStats();
-  }, []);
-}
-
-/**
  * Hook for popular stocks with pre-loaded data
  * EFFICIENCY: Uses popular stocks as fallback when search is empty
  */
@@ -195,7 +180,7 @@ export function usePopularStocks(allTickers: USStock[] = []) {
     ];
 
     return popularSymbols
-      .map(symbol => allTickers.find(stock => stock.ticker === symbol))
+      .map(symbol => allTickers.find(stock => stock.symbol === symbol))
       .filter((stock): stock is USStock => stock !== undefined);
   }, [allTickers]);
 }

@@ -14,9 +14,10 @@ export {
 } from './ui/card';
 export { Input } from './ui/input';
 export { Label } from './ui/label';
+export { Badge } from './ui/badge';
 
-// Placeholder for future components
-// export { StockSearch } from './StockSearch';
+// Feature Components
+export { StockSearch } from './StockSearch';
 // export { DateRangePicker } from './DateRangePicker';
 // export { PriceTypeToggle } from './PriceTypeToggle';
 // export { SelectedStocks } from './SelectedStocks';

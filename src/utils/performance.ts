@@ -96,7 +96,7 @@ export async function retry<T>(
     backoffFactor = 2,
   } = options;
 
-  let lastError: Error;
+  let lastError: Error = new Error('Unknown error');
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -117,7 +117,7 @@ export async function retry<T>(
     }
   }
 
-  throw lastError;
+  throw lastError || new Error('Retry failed with unknown error');
 }
 
 /**

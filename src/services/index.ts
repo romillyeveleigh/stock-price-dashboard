@@ -4,7 +4,6 @@
 
 // API services
 export { PolygonApiService } from './polygonApi';
-export { RateLimitManager } from './rateLimitManager';
 
 // Placeholder for future service implementations
 // export { CacheService } from './cache';

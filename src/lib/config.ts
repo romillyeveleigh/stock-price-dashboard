@@ -7,24 +7,7 @@ import type { ApiClientConfig, RateLimitConfig } from '@/types';
 // Environment variables with defaults
 // Use process.env in test environment, import.meta.env in browser
 const getEnvVar = (key: string, defaultValue: string | boolean = '') => {
-  // Check if we're in a test environment (Jest)
-  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
-    return process.env[key] || defaultValue;
-  }
-
-  // Check if we're in a browser environment with Vite
-  if (
-    typeof window !== 'undefined' &&
-    (window as { import?: { meta?: { env?: Record<string, string> } } }).import
-      ?.meta?.env
-  ) {
-    return (
-      (window as { import: { meta: { env: Record<string, string> } } }).import
-        .meta.env[key] || defaultValue
-    );
-  }
-
-  // Fallback to process.env for Node.js environments
+  // In test environment, use process.env
   if (typeof process !== 'undefined') {
     return process.env[key] || defaultValue;
   }
