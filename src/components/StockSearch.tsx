@@ -41,8 +41,13 @@ export function StockSearch({
     isLoading: tickersLoading,
     error: tickersError,
   } = useAllTickers();
-  const { selectedStocks, canAddStock, addStock, isStockSelected } =
-    useStockSelection();
+  const {
+    selectedStocks,
+    canAddStock,
+    addStock,
+    removeStock,
+    isStockSelected,
+  } = useStockSelection();
 
   // Get first 10 stocks for when input is empty
   const getDefaultStocks = useCallback((): Stock[] => {
@@ -101,17 +106,20 @@ export function StockSearch({
 
   const suggestions = filteredStocks();
 
-  // Handle stock selection
-  const handleSelectStock = useCallback(
+  // Handle stock selection and deselection
+  const handleToggleStock = useCallback(
     (stock: Stock) => {
       if (isStockSelected(stock.symbol)) {
-        return; // Already selected
+        // Deselect the stock
+        removeStock(stock.symbol);
+        return;
       }
 
       if (!canAddStock) {
         return; // Max limit reached
       }
 
+      // Select the stock
       const success = addStock(stock);
       if (success) {
         setQuery('');
@@ -122,7 +130,7 @@ export function StockSearch({
         inputRef.current?.focus();
       }
     },
-    [addStock, canAddStock, isStockSelected]
+    [addStock, removeStock, canAddStock, isStockSelected]
   );
 
   // Handle keyboard navigation
@@ -159,7 +167,7 @@ export function StockSearch({
         case 'Enter':
           e.preventDefault();
           if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-            handleSelectStock(suggestions[selectedIndex]);
+            handleToggleStock(suggestions[selectedIndex]);
           }
           break;
 
@@ -170,7 +178,7 @@ export function StockSearch({
           break;
       }
     },
-    [isOpen, suggestions, selectedIndex, handleSelectStock]
+    [isOpen, suggestions, selectedIndex, handleToggleStock]
   );
 
   // Handle input change
@@ -267,7 +275,7 @@ export function StockSearch({
       {/* Help text */}
       <div id='search-help' className='sr-only'>
         Click to see all stocks or type to search. Use arrow keys to navigate
-        suggestions and Enter to select.
+        suggestions and Enter to select or deselect stocks.
       </div>
       {/* Dropdown with suggestions */}
       {isOpen && (
@@ -316,21 +324,23 @@ export function StockSearch({
                       aria-selected={isSelected}
                       aria-disabled={!canSelect}
                       className={`
-                        flex cursor-pointer items-center justify-between p-3 transition-colors
+                        flex items-center justify-between p-3 transition-colors
                         ${isSelected ? 'bg-accent' : 'hover:bg-accent/50'}
-                        ${!canSelect ? 'cursor-not-allowed opacity-50' : ''}
-                        ${isAlreadySelected ? 'bg-muted' : ''}
+                        ${!canSelect && !isAlreadySelected ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                        ${isAlreadySelected ? 'bg-muted hover:bg-muted/80' : ''}
                       `}
                       onClick={() => {
-                        if (!isAlreadySelected && canAddStock) {
-                          handleSelectStock(stock);
+                        // Allow clicking to select or deselect
+                        if (isAlreadySelected || canAddStock) {
+                          handleToggleStock(stock);
                         }
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          if (!isAlreadySelected && canAddStock) {
-                            handleSelectStock(stock);
+                          // Allow keyboard to select or deselect
+                          if (isAlreadySelected || canAddStock) {
+                            handleToggleStock(stock);
                           }
                         }
                       }}
@@ -345,7 +355,7 @@ export function StockSearch({
                             <span className='font-medium'>{stock.symbol}</span>
                             {isAlreadySelected && (
                               <Badge variant='secondary' className='text-xs'>
-                                Selected
+                                Selected (click to remove)
                               </Badge>
                             )}
                           </div>
