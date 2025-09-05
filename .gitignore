@@ -59,3 +59,34 @@ yarn-error.log
 
 # TypeScript
 *.tsbuildinfo
+
+# Jest
+jest-coverage/
+.nyc_output/
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# Husky
+.husky/_
+
+# Storybook
+storybook-static/
+
+# Bundle analyzer
+bundle-analyzer-report.html
+
+# Lighthouse CI
+.lighthouseci/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
