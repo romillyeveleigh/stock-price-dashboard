@@ -31,6 +31,7 @@ export function StockSearch({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const justSelectedRef = useRef(false);
 
   // Debounce search query to prevent excessive API calls
   const debouncedQuery = useDebounce(query, APP_CONFIG.DEBOUNCE_DELAY);
@@ -112,11 +113,19 @@ export function StockSearch({
       // Select the stock
       const success = addStock(stock);
       if (success) {
+        // Set flag to prevent immediate reopening
+        justSelectedRef.current = true;
+
         // Close dropdown after selection
         setQuery('');
         setIsOpen(false);
         setSelectedIndex(-1);
-        inputRef.current?.focus();
+
+        // Focus back to input after a short delay
+        setTimeout(() => {
+          inputRef.current?.focus();
+          justSelectedRef.current = false;
+        }, 100);
       }
     },
     [addStock, canAddStock, isStockSelected]
@@ -183,7 +192,10 @@ export function StockSearch({
 
   // Handle input focus - always open dropdown to show popular stocks or search results
   const handleInputFocus = useCallback(() => {
-    setIsOpen(true);
+    // Don't reopen immediately after a selection
+    if (!justSelectedRef.current) {
+      setIsOpen(true);
+    }
   }, []);
 
   // Handle click outside to close dropdown
