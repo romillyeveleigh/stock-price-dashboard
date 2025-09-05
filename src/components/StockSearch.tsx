@@ -44,38 +44,20 @@ export function StockSearch({
   const { selectedStocks, canAddStock, addStock, isStockSelected } =
     useStockSelection();
 
-  // Get popular stocks for when input is empty
-  const getPopularStocks = useCallback((): Stock[] => {
-    const popularSymbols = [
-      'AAPL',
-      'MSFT',
-      'GOOGL',
-      'AMZN',
-      'TSLA',
-      'META',
-      'NVDA',
-      'NFLX',
-      'AMD',
-      'CRM',
-    ];
-
-    return popularSymbols
-      .map(symbol => {
-        const usStock = allTickers.find(stock => stock.symbol === symbol);
-        if (!usStock) return null;
-
-        // Convert USStock to Stock
-        return {
+  // Get first 10 stocks for when input is empty
+  const getDefaultStocks = useCallback((): Stock[] => {
+    return allTickers
+      .slice(0, 10) // Show first 10 stocks alphabetically
+      .map(
+        (usStock): Stock => ({
           symbol: usStock.symbol,
           name: usStock.name,
           market: usStock.market,
-        } as Stock;
-      })
-      .filter((stock): stock is Stock => stock !== null)
-      .slice(0, 8); // Show top 8 popular stocks
+        })
+      );
   }, [allTickers]);
 
-  // Filter stocks based on search query or show popular stocks
+  // Filter stocks based on search query or show first 10 stocks
   const filteredStocks = useCallback((): Stock[] => {
     // If there's a search query, filter based on it
     if (
@@ -109,13 +91,13 @@ export function StockSearch({
         );
     }
 
-    // If input is focused but empty, show popular stocks
+    // If input is focused but empty, show first 10 stocks
     if (isOpen && !query) {
-      return getPopularStocks();
+      return getDefaultStocks();
     }
 
     return [];
-  }, [debouncedQuery, allTickers, isOpen, query, getPopularStocks]);
+  }, [debouncedQuery, allTickers, isOpen, query, getDefaultStocks]);
 
   const suggestions = filteredStocks();
 
@@ -227,7 +209,7 @@ export function StockSearch({
   // Clear search
   const handleClear = useCallback(() => {
     setQuery('');
-    setIsOpen(true); // Keep dropdown open to show popular stocks
+    setIsOpen(true); // Keep dropdown open to show all stocks
     setSelectedIndex(-1);
     inputRef.current?.focus();
   }, []);
@@ -284,8 +266,8 @@ export function StockSearch({
 
       {/* Help text */}
       <div id='search-help' className='sr-only'>
-        Click to see popular stocks or type to search. Use arrow keys to
-        navigate suggestions and Enter to select.
+        Click to see all stocks or type to search. Use arrow keys to navigate
+        suggestions and Enter to select.
       </div>
       {/* Dropdown with suggestions */}
       {isOpen && (
@@ -315,10 +297,10 @@ export function StockSearch({
             {/* Search suggestions or popular stocks */}
             {suggestions.length > 0 && (
               <div role='listbox' aria-label='Stock suggestions'>
-                {/* Header for popular stocks */}
+                {/* Header for default stocks when no query */}
                 {!query && (
                   <div className='border-b bg-muted/20 px-3 py-2 text-xs font-medium text-muted-foreground'>
-                    Popular Stocks
+                    All Stocks
                   </div>
                 )}
                 {suggestions.map((stock, index) => {
