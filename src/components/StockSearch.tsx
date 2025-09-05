@@ -44,34 +44,78 @@ export function StockSearch({
   const { selectedStocks, canAddStock, addStock, isStockSelected } =
     useStockSelection();
 
-  // Filter stocks based on search query
-  const filteredStocks = useCallback(() => {
+  // Get popular stocks for when input is empty
+  const getPopularStocks = useCallback((): Stock[] => {
+    const popularSymbols = [
+      'AAPL',
+      'MSFT',
+      'GOOGL',
+      'AMZN',
+      'TSLA',
+      'META',
+      'NVDA',
+      'NFLX',
+      'AMD',
+      'CRM',
+    ];
+
+    return popularSymbols
+      .map(symbol => {
+        const usStock = allTickers.find(stock => stock.symbol === symbol);
+        if (!usStock) return null;
+
+        // Convert USStock to Stock
+        return {
+          symbol: usStock.symbol,
+          name: usStock.name,
+          market: usStock.market,
+        } as Stock;
+      })
+      .filter((stock): stock is Stock => stock !== null)
+      .slice(0, 8); // Show top 8 popular stocks
+  }, [allTickers]);
+
+  // Filter stocks based on search query or show popular stocks
+  const filteredStocks = useCallback((): Stock[] => {
+    // If there's a search query, filter based on it
     if (
-      !debouncedQuery ||
-      debouncedQuery.length < APP_CONFIG.SEARCH_MIN_LENGTH
+      debouncedQuery &&
+      debouncedQuery.length >= APP_CONFIG.SEARCH_MIN_LENGTH
     ) {
-      return [];
+      const searchTerm = debouncedQuery.toLowerCase();
+      return allTickers
+        .filter(
+          stock =>
+            stock.symbol.toLowerCase().includes(searchTerm) ||
+            stock.name.toLowerCase().includes(searchTerm)
+        )
+        .slice(0, 10) // Limit results for performance
+        .sort((a, b) => {
+          // Prioritize ticker symbol matches
+          const aTickerMatch = a.symbol.toLowerCase().startsWith(searchTerm);
+          const bTickerMatch = b.symbol.toLowerCase().startsWith(searchTerm);
+
+          if (aTickerMatch && !bTickerMatch) return -1;
+          if (!aTickerMatch && bTickerMatch) return 1;
+
+          return a.symbol.localeCompare(b.symbol);
+        })
+        .map(
+          (usStock): Stock => ({
+            symbol: usStock.symbol,
+            name: usStock.name,
+            market: usStock.market,
+          })
+        );
     }
 
-    const searchTerm = debouncedQuery.toLowerCase();
-    return allTickers
-      .filter(
-        stock =>
-          stock.symbol.toLowerCase().includes(searchTerm) ||
-          stock.name.toLowerCase().includes(searchTerm)
-      )
-      .slice(0, 10) // Limit results for performance
-      .sort((a, b) => {
-        // Prioritize ticker symbol matches
-        const aTickerMatch = a.symbol.toLowerCase().startsWith(searchTerm);
-        const bTickerMatch = b.symbol.toLowerCase().startsWith(searchTerm);
+    // If input is focused but empty, show popular stocks
+    if (isOpen && !query) {
+      return getPopularStocks();
+    }
 
-        if (aTickerMatch && !bTickerMatch) return -1;
-        if (!aTickerMatch && bTickerMatch) return 1;
-
-        return a.symbol.localeCompare(b.symbol);
-      });
-  }, [debouncedQuery, allTickers]);
+    return [];
+  }, [debouncedQuery, allTickers, isOpen, query, getPopularStocks]);
 
   const suggestions = filteredStocks();
 
@@ -102,12 +146,16 @@ export function StockSearch({
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (!isOpen || suggestions.length === 0) {
-        if (e.key === 'ArrowDown' && suggestions.length > 0) {
+      if (!isOpen) {
+        if (e.key === 'ArrowDown') {
           setIsOpen(true);
           setSelectedIndex(0);
           e.preventDefault();
         }
+        return;
+      }
+
+      if (suggestions.length === 0) {
         return;
       }
 
@@ -148,18 +196,16 @@ export function StockSearch({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setQuery(value);
-      setIsOpen(value.length >= APP_CONFIG.SEARCH_MIN_LENGTH);
+      setIsOpen(true); // Keep dropdown open to show popular stocks or search results
       setSelectedIndex(-1);
     },
     []
   );
 
-  // Handle input focus
+  // Handle input focus - always open dropdown to show popular stocks or search results
   const handleInputFocus = useCallback(() => {
-    if (query.length >= APP_CONFIG.SEARCH_MIN_LENGTH) {
-      setIsOpen(true);
-    }
-  }, [query]);
+    setIsOpen(true);
+  }, []);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -181,7 +227,7 @@ export function StockSearch({
   // Clear search
   const handleClear = useCallback(() => {
     setQuery('');
-    setIsOpen(false);
+    setIsOpen(true); // Keep dropdown open to show popular stocks
     setSelectedIndex(-1);
     inputRef.current?.focus();
   }, []);
@@ -238,7 +284,7 @@ export function StockSearch({
 
       {/* Help text */}
       <div id='search-help' className='sr-only'>
-        Search for stocks by typing at least 2 characters. Use arrow keys to
+        Click to see popular stocks or type to search. Use arrow keys to
         navigate suggestions and Enter to select.
       </div>
       {/* Dropdown with suggestions */}
@@ -266,9 +312,15 @@ export function StockSearch({
                 </div>
               )}
 
-            {/* Search suggestions */}
+            {/* Search suggestions or popular stocks */}
             {suggestions.length > 0 && (
               <div role='listbox' aria-label='Stock suggestions'>
+                {/* Header for popular stocks */}
+                {!query && (
+                  <div className='border-b bg-muted/20 px-3 py-2 text-xs font-medium text-muted-foreground'>
+                    Popular Stocks
+                  </div>
+                )}
                 {suggestions.map((stock, index) => {
                   const isSelected = index === selectedIndex;
                   const isAlreadySelected = isStockSelected(stock.symbol);
