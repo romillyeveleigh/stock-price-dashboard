@@ -5,11 +5,38 @@
 import type { ApiClientConfig, RateLimitConfig } from '@/types';
 
 // Environment variables with defaults
+// Use process.env in test environment, import.meta.env in browser
+const getEnvVar = (key: string, defaultValue: string | boolean = '') => {
+  // Check if we're in a test environment (Jest)
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+    return process.env[key] || defaultValue;
+  }
+
+  // Check if we're in a browser environment with Vite
+  if (
+    typeof window !== 'undefined' &&
+    (window as { import?: { meta?: { env?: Record<string, string> } } }).import
+      ?.meta?.env
+  ) {
+    return (
+      (window as { import: { meta: { env: Record<string, string> } } }).import
+        .meta.env[key] || defaultValue
+    );
+  }
+
+  // Fallback to process.env for Node.js environments
+  if (typeof process !== 'undefined') {
+    return process.env[key] || defaultValue;
+  }
+
+  return defaultValue;
+};
+
 export const ENV = {
-  POLYGON_API_KEY: import.meta.env.VITE_POLYGON_API_KEY || '',
-  NODE_ENV: import.meta.env.NODE_ENV || 'development',
-  DEV: import.meta.env.DEV || false,
-  PROD: import.meta.env.PROD || false,
+  POLYGON_API_KEY: getEnvVar('VITE_POLYGON_API_KEY', '') as string,
+  NODE_ENV: getEnvVar('NODE_ENV', 'development') as string,
+  DEV: getEnvVar('NODE_ENV', 'development') === 'development',
+  PROD: getEnvVar('NODE_ENV', 'development') === 'production',
 } as const;
 
 // API Configuration
