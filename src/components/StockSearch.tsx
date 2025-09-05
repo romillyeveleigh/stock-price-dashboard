@@ -64,11 +64,8 @@ export function StockSearch({
 
   // Filter stocks based on search query or show first 10 stocks
   const filteredStocks = useCallback((): Stock[] => {
-    // If there's a search query, filter based on it
-    if (
-      debouncedQuery &&
-      debouncedQuery.length >= APP_CONFIG.SEARCH_MIN_LENGTH
-    ) {
+    // If there's a search query (even 1 character), filter based on it
+    if (debouncedQuery && debouncedQuery.length >= 1) {
       const searchTerm = debouncedQuery.toLowerCase();
       return allTickers
         .filter(
@@ -224,8 +221,7 @@ export function StockSearch({
 
   // Loading state
   const isLoading =
-    tickersLoading ||
-    (debouncedQuery !== query && query.length >= APP_CONFIG.SEARCH_MIN_LENGTH);
+    tickersLoading || (debouncedQuery !== query && query.length >= 1);
 
   return (
     <div className={`relative ${className}`}>
@@ -295,7 +291,7 @@ export function StockSearch({
             {/* No results */}
             {!tickersError &&
               suggestions.length === 0 &&
-              debouncedQuery.length >= APP_CONFIG.SEARCH_MIN_LENGTH && (
+              debouncedQuery.length >= 1 && (
                 <div className='p-4 text-sm text-muted-foreground'>
                   No stocks found for &quot;{debouncedQuery}&quot;. Try a
                   different search term.
