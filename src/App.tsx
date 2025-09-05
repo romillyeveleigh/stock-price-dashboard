@@ -2,7 +2,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter } from 'react-router-dom';
 
-import { StockSearch } from '@/components';
+import {
+  StockSearch,
+  DateRangePicker,
+  PriceTypeToggle,
+  SelectedStocks,
+} from '@/components';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,7 +17,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { AppProvider } from '@/contexts';
-import { useUrlSync, useStockSelection } from '@/hooks';
+import { useUrlSync } from '@/hooks';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,8 +42,7 @@ function AppContent() {
   // Initialize URL synchronization
   useUrlSync();
 
-  // Get selected stocks for display
-  const { selectedStocks } = useStockSelection();
+  // Initialize URL synchronization
 
   return (
     <div className='min-h-screen bg-background'>
@@ -91,26 +95,48 @@ function AppContent() {
             </CardHeader>
             <CardContent className='space-y-4'>
               <StockSearch />
+              <SelectedStocks variant='compact' />
+            </CardContent>
+          </Card>
 
-              {/* Selected Stocks Display */}
-              {selectedStocks.length > 0 && (
-                <div className='space-y-2'>
-                  <h3 className='text-sm font-medium'>Selected Stocks:</h3>
-                  <div className='flex flex-wrap gap-2'>
-                    {selectedStocks.map(stock => (
-                      <div
-                        key={stock.symbol}
-                        className='flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-sm'
-                      >
-                        <span className='font-medium'>{stock.symbol}</span>
-                        <span className='text-muted-foreground'>
-                          {stock.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+          {/* Date Range Picker Demo */}
+          <Card className='w-full max-w-2xl'>
+            <CardHeader>
+              <CardTitle className='text-xl'>Date Range Selection</CardTitle>
+              <CardDescription>
+                Choose a date range for historical stock data analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DateRangePicker />
+            </CardContent>
+          </Card>
+
+          {/* Price Type Toggle Demo */}
+          <Card className='w-full max-w-2xl'>
+            <CardHeader>
+              <CardTitle className='text-xl'>Price Type Selection</CardTitle>
+              <CardDescription>
+                Select which price data to display in the chart
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PriceTypeToggle />
+            </CardContent>
+          </Card>
+
+          {/* Selected Stocks Demo */}
+          <Card className='w-full max-w-2xl'>
+            <CardHeader>
+              <CardTitle className='text-xl'>
+                Selected Stocks Management
+              </CardTitle>
+              <CardDescription>
+                View and manage your selected stocks with remove functionality
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SelectedStocks />
             </CardContent>
           </Card>
 

@@ -120,7 +120,7 @@ describe('StockSearch', () => {
       data: [],
       isLoading: true,
       error: null,
-    } as ReturnType<typeof hooks.useAllTickers>);
+    } as unknown as ReturnType<typeof hooks.useAllTickers>);
 
     render(
       <TestWrapper>
@@ -138,7 +138,7 @@ describe('StockSearch', () => {
       data: [],
       isLoading: false,
       error: new Error('Failed to load'),
-    } as ReturnType<typeof hooks.useAllTickers>);
+    } as unknown as ReturnType<typeof hooks.useAllTickers>);
 
     render(
       <TestWrapper>

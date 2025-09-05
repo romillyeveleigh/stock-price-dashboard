@@ -18,6 +18,9 @@ export { Badge } from './ui/badge';
 
 // Feature Components
 export { StockSearch } from './StockSearch';
+export { DateRangePicker } from './DateRangePicker';
+export { PriceTypeToggle } from './PriceTypeToggle';
+export { SelectedStocks } from './SelectedStocks';
 // export { DateRangePicker } from './DateRangePicker';
 // export { PriceTypeToggle } from './PriceTypeToggle';
 // export { SelectedStocks } from './SelectedStocks';
