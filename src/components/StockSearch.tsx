@@ -86,13 +86,15 @@ export function StockSearch({
         return; // Max limit reached
       }
 
-      addStock(stock);
-      setQuery('');
-      setIsOpen(false);
-      setSelectedIndex(-1);
+      const success = addStock(stock);
+      if (success) {
+        setQuery('');
+        setIsOpen(false);
+        setSelectedIndex(-1);
 
-      // Focus back to input for better UX
-      inputRef.current?.focus();
+        // Focus back to input for better UX
+        inputRef.current?.focus();
+      }
     },
     [addStock, canAddStock, isStockSelected]
   );
@@ -270,7 +272,7 @@ export function StockSearch({
                 {suggestions.map((stock, index) => {
                   const isSelected = index === selectedIndex;
                   const isAlreadySelected = isStockSelected(stock.symbol);
-                  const canSelect = canAddStock || isAlreadySelected;
+                  const canSelect = canAddStock;
 
                   return (
                     <div
@@ -285,15 +287,15 @@ export function StockSearch({
                         ${!canSelect ? 'cursor-not-allowed opacity-50' : ''}
                         ${isAlreadySelected ? 'bg-muted' : ''}
                       `}
-                      onClick={() =>
-                        canSelect &&
-                        !isAlreadySelected &&
-                        handleSelectStock(stock)
-                      }
+                      onClick={() => {
+                        if (!isAlreadySelected && canAddStock) {
+                          handleSelectStock(stock);
+                        }
+                      }}
                       onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          if (canSelect && !isAlreadySelected) {
+                          if (!isAlreadySelected && canAddStock) {
                             handleSelectStock(stock);
                           }
                         }

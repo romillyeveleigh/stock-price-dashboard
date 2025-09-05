@@ -20,8 +20,13 @@ export function useUrlSync() {
     useAppContext();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Parse URL parameters on mount and when URL changes
+  // Parse URL parameters on mount only (not when state changes)
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
+    // Only parse URL on initial mount to avoid circular updates
+    if (!isInitialMount.current) return;
+
     const stocksParam = searchParams.get('stocks');
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
@@ -77,22 +82,15 @@ export function useUrlSync() {
       }
     }
 
+    // Mark initial mount as complete
+    isInitialMount.current = false;
+
     // Only log if we actually made changes to avoid infinite loops
     if (hasChanges) {
       // eslint-disable-next-line no-console
-      console.debug('URL state synchronized');
+      console.debug('URL state synchronized on mount');
     }
-  }, [
-    searchParams,
-    state.selectedStocks,
-    state.dateRange.from,
-    state.dateRange.to,
-    state.priceType,
-    setDateRange,
-    setPriceType,
-    addStock,
-    resetState,
-  ]); // Only depend on searchParams to avoid infinite loops
+  }, [searchParams, setDateRange, setPriceType, addStock, resetState]); // Include action functions but not state
 
   // Update URL when state changes (debounced)
   const updateUrl = useCallback(() => {

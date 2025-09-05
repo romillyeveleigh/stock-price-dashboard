@@ -8,8 +8,13 @@ import type { ApiClientConfig, RateLimitConfig } from '@/types';
 // Use process.env in test environment, import.meta.env in browser
 const getEnvVar = (key: string, defaultValue: string | boolean = '') => {
   // In test environment, use process.env
-  if (typeof process !== 'undefined') {
+  if (typeof process !== 'undefined' && process.env) {
     return process.env[key] || defaultValue;
+  }
+
+  // In browser environment, use import.meta.env
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key] || defaultValue;
   }
 
   return defaultValue;
@@ -21,6 +26,16 @@ export const ENV = {
   DEV: getEnvVar('NODE_ENV', 'development') === 'development',
   PROD: getEnvVar('NODE_ENV', 'development') === 'production',
 } as const;
+
+// Debug logging in development
+if (ENV.DEV) {
+  console.log('Environment variables:', {
+    POLYGON_API_KEY: ENV.POLYGON_API_KEY
+      ? `${ENV.POLYGON_API_KEY.slice(0, 8)}...`
+      : 'NOT SET',
+    NODE_ENV: ENV.NODE_ENV,
+  });
+}
 
 // API Configuration
 export const API_CONFIG: ApiClientConfig = {
