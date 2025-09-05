@@ -24,6 +24,10 @@ export default {
           jsx: 'react-jsx',
           esModuleInterop: true,
           allowSyntheticDefaultImports: true,
+          baseUrl: '.',
+          paths: {
+            '@/*': ['./src/*'],
+          },
         },
       },
     ],
@@ -33,6 +37,7 @@ export default {
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
   transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$|@testing-library))'],
   moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
 };

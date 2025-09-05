@@ -7,7 +7,7 @@ process.env.VITE_POLYGON_API_KEY = 'test-api-key';
 // Polyfill for TextEncoder/TextDecoder (needed for React Router)
 import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 // Mock fetch globally
 global.fetch = jest.fn();
