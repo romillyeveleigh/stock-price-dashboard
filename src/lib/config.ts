@@ -29,7 +29,7 @@ export const ENV = {
 
 // Debug logging in development
 if (ENV.DEV) {
-  console.log('Environment variables:', {
+  console.warn('Environment variables:', {
     POLYGON_API_KEY: ENV.POLYGON_API_KEY
       ? `${ENV.POLYGON_API_KEY.slice(0, 8)}...`
       : 'NOT SET',

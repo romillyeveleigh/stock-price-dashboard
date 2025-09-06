@@ -3,9 +3,11 @@
  * Provides real-time search with debounced API calls and accessibility features
  */
 
-import { Search, X, TrendingUp, AlertCircle } from 'lucide-react';
+import { Search, X, TrendingUp } from 'lucide-react';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 
+import { NoSearchResults } from '@/components/EmptyStates';
+import { SearchError } from '@/components/ErrorStates';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -274,20 +276,31 @@ export function StockSearch({
           <CardContent className='p-0'>
             {/* Error state */}
             {tickersError && (
-              <div className='flex items-center gap-2 p-4 text-sm text-destructive'>
-                <AlertCircle className='h-4 w-4' />
-                <span>Failed to load stock data. Please try again.</span>
-              </div>
+              <SearchError
+                error={tickersError}
+                onRetry={() => window.location.reload()}
+              />
             )}
 
             {/* No results */}
             {!tickersError &&
               suggestions.length === 0 &&
               debouncedQuery.length >= 1 && (
-                <div className='p-4 text-sm text-muted-foreground'>
-                  No stocks found for &quot;{debouncedQuery}&quot;. Try a
-                  different search term.
-                </div>
+                <NoSearchResults
+                  query={debouncedQuery}
+                  suggestions={[
+                    'AAPL',
+                    'MSFT',
+                    'GOOGL',
+                    'TSLA',
+                    'AMZN',
+                    'NVDA',
+                  ]}
+                  onSuggestionClick={suggestion => {
+                    setQuery(suggestion);
+                    setIsOpen(true);
+                  }}
+                />
               )}
 
             {/* Search suggestions or popular stocks */}

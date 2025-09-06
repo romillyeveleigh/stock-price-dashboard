@@ -32,6 +32,7 @@ export class PolygonApiService {
   async getAllTickers(): Promise<USStock[]> {
     try {
       const url = this.buildUrl('/v3/reference/tickers', {
+        type: 'CS',
         market: 'stocks',
         active: 'true',
         limit: '1000',

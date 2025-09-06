@@ -7,6 +7,9 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useMemo, useRef, useEffect } from 'react';
 
+import { ChartEmptyState, NoDataAvailable } from '@/components/EmptyStates';
+import { ChartError } from '@/components/ErrorStates';
+import { ChartLoadingSkeleton } from '@/components/LoadingStates';
 import { useAppContext } from '@/contexts/AppContext';
 import { useMultipleStockPrices } from '@/hooks';
 import { APP_CONFIG } from '@/lib';
@@ -282,138 +285,75 @@ export function StockChart({
         enabled: false,
       },
     };
-  }, [stockPricesData, state.priceType, height]);
+  }, [stockPricesData, state.priceType, height, hasDelayedData]);
 
   // Handle chart cleanup
   useEffect(() => {
+    const currentChart = chartRef.current;
     return () => {
-      if (chartRef.current?.chart) {
-        chartRef.current.chart.destroy();
+      if (currentChart?.chart) {
+        currentChart.chart.destroy();
       }
     };
   }, []);
 
   // Loading state
   if (isLoading) {
-    return (
-      <div
-        className={`flex items-center justify-center ${className}`}
-        style={{ height }}
-      >
-        <div className='flex flex-col items-center gap-4'>
-          <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
-          <p className='text-sm text-muted-foreground'>Loading chart data...</p>
-        </div>
-      </div>
-    );
+    return <ChartLoadingSkeleton className={className} height={height} />;
   }
 
   // Error state
   if (isError) {
+    const errorMessage =
+      errors.length > 0 ? errors[0]?.message : 'Failed to load chart data';
     return (
-      <div
-        className={`flex items-center justify-center ${className}`}
-        style={{ height }}
-      >
-        <div className='flex flex-col items-center gap-4 text-center'>
-          <div className='rounded-full bg-destructive/10 p-3'>
-            <svg
-              className='h-6 w-6 text-destructive'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
-              />
-            </svg>
-          </div>
-          <div>
-            <h3 className='font-medium text-foreground'>
-              Failed to load chart data
-            </h3>
-            <p className='text-sm text-muted-foreground'>
-              {errors.length > 0
-                ? errors[0]?.message
-                : 'Please try again later'}
-            </p>
-          </div>
-        </div>
-      </div>
+      <ChartError
+        className={className}
+        height={height}
+        error={errorMessage}
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 
-  // Empty state
+  // Empty state - no stocks selected
   if (stockSymbols.length === 0) {
     return (
-      <div
-        className={`flex items-center justify-center ${className}`}
-        style={{ height }}
-      >
-        <div className='flex flex-col items-center gap-4 text-center'>
-          <div className='rounded-full bg-muted p-3'>
-            <svg
-              className='h-6 w-6 text-muted-foreground'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
-              />
-            </svg>
-          </div>
-          <div>
-            <h3 className='font-medium text-foreground'>No stocks selected</h3>
-            <p className='text-sm text-muted-foreground'>
-              Select up to 3 stocks to view their price charts
-            </p>
-          </div>
-        </div>
-      </div>
+      <ChartEmptyState
+        className={className}
+        height={height}
+        message='Select up to 3 stocks to view their price charts'
+        actionLabel='Select Stocks'
+        onAction={() => {
+          // Focus on search input
+          const searchInput = document.querySelector(
+            'input[aria-label="Search stocks"]'
+          ) as HTMLInputElement;
+          searchInput?.focus();
+        }}
+      />
     );
   }
 
-  // No data state
+  // No data state - stocks selected but no data available
   if (
     stockPricesData.length === 0 ||
     stockPricesData.every(data => !data || data.data.length === 0)
   ) {
     return (
-      <div
-        className={`flex items-center justify-center ${className}`}
-        style={{ height }}
-      >
-        <div className='flex flex-col items-center gap-4 text-center'>
-          <div className='rounded-full bg-muted p-3'>
-            <svg
-              className='h-6 w-6 text-muted-foreground'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4'
-              />
-            </svg>
-          </div>
-          <div>
-            <h3 className='font-medium text-foreground'>No data available</h3>
-            <p className='text-sm text-muted-foreground'>
-              No price data found for the selected date range
-            </p>
-          </div>
-        </div>
-      </div>
+      <NoDataAvailable
+        className={className}
+        dateRange={state.dateRange}
+        stocks={stockSymbols}
+        onAction={() => {
+          // Focus on date range picker
+          const dateInput = document.querySelector(
+            'input[type="date"]'
+          ) as HTMLInputElement;
+          dateInput?.focus();
+        }}
+        actionLabel='Adjust Date Range'
+      />
     );
   }
 

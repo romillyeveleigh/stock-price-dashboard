@@ -59,10 +59,34 @@
   }
 }
 
-/* Add some test styles to verify CSS is working */
-.test-styling {
-  background-color: red;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
+/* Safe area utilities for mobile devices */
+@layer utilities {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-pl {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-pr {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Touch-friendly improvements for mobile */
+@layer components {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
 }
