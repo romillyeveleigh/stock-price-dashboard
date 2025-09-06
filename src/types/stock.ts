@@ -40,6 +40,12 @@ export interface PriceDataPoint {
 export interface StockPriceData {
   symbol: string;
   data: PriceDataPoint[];
+  metadata?: {
+    isDelayed?: boolean;
+    status?: string;
+    queryCount?: number;
+    resultsCount?: number;
+  };
 }
 
 // Normalized stock data with metadata

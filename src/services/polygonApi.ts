@@ -115,10 +115,21 @@ export class PolygonApiService {
 
       const data: PolygonAggregatesResponse = await response.json();
 
-      if (data.status !== 'OK') {
+      // Handle different status responses from Polygon API
+      if (data.status === 'ERROR') {
         throw this.createAppError(
           ErrorType.API_ERROR,
-          `API returned status: ${data.status}`,
+          `API returned error status: ${data.status}`,
+          data
+        );
+      }
+
+      // 'OK' and 'DELAYED' are both valid statuses
+      // 'DELAYED' indicates data might be delayed (e.g., requesting today's data before market close)
+      if (!['OK', 'DELAYED'].includes(data.status)) {
+        throw this.createAppError(
+          ErrorType.API_ERROR,
+          `API returned unexpected status: ${data.status}`,
           data
         );
       }
@@ -129,7 +140,7 @@ export class PolygonApiService {
         };
       }
 
-      return this.transformAggregatesData(data);
+      return this.transformAggregatesData(data, data.status === 'DELAYED');
     } catch (error) {
       // Re-throw AppError instances directly
       if (error && typeof error === 'object' && 'type' in error) {
@@ -251,12 +262,16 @@ export class PolygonApiService {
           symbol,
         });
     }
-  } /*
-   *
+  }
+
+  /**
    * Transforms Polygon aggregates data to our internal format
+   * @param response - The Polygon API response
+   * @param isDelayed - Whether the data is delayed (status === 'DELAYED')
    */
   private transformAggregatesData(
-    response: PolygonAggregatesResponse
+    response: PolygonAggregatesResponse,
+    isDelayed = false
   ): StockPriceData {
     return {
       symbol: response.ticker,
@@ -270,6 +285,13 @@ export class PolygonApiService {
         volumeWeightedPrice: result.vw,
         transactions: result.n,
       })),
+      // Add metadata about data status
+      metadata: {
+        isDelayed,
+        status: response.status,
+        queryCount: response.queryCount,
+        resultsCount: response.resultsCount,
+      },
     };
   }
 

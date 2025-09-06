@@ -39,6 +39,11 @@ export function StockChart({
     stockSymbols.length > 0
   );
 
+  // Check if any data is delayed
+  const hasDelayedData = useMemo(() => {
+    return stockPricesData.some(stockData => stockData?.metadata?.isDelayed);
+  }, [stockPricesData]);
+
   // Transform data for Highcharts
   const chartOptions = useMemo((): Highcharts.Options => {
     const series: Highcharts.SeriesOptionsType[] = [];
@@ -108,6 +113,16 @@ export function StockChart({
           color: '#1f2937',
         },
       },
+      subtitle: hasDelayedData
+        ? {
+            text: '⚠️ Some data may be delayed (market hours or recent data)',
+            style: {
+              fontSize: '12px',
+              color: '#f59e0b',
+              fontWeight: '500',
+            },
+          }
+        : undefined,
       xAxis: {
         type: 'datetime',
         title: {
