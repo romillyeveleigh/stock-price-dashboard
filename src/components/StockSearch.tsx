@@ -50,22 +50,9 @@ export function StockSearch({
     isStockSelected,
   } = useStockSelection();
 
-  // Get first 10 stocks for when input is empty
-  const getDefaultStocks = useCallback((): Stock[] => {
-    return allTickers
-      .slice(0, 10) // Show first 10 stocks alphabetically
-      .map(
-        (usStock): Stock => ({
-          symbol: usStock.symbol,
-          name: usStock.name,
-          market: usStock.market,
-        })
-      );
-  }, [allTickers]);
-
-  // Filter stocks based on search query or show first 10 stocks
+  // Filter stocks based on search query only
   const filteredStocks = useCallback((): Stock[] => {
-    // If there's a search query (even 1 character), filter based on it
+    // Only show results if there's a search query (1+ characters)
     if (debouncedQuery && debouncedQuery.length >= 1) {
       const searchTerm = debouncedQuery.toLowerCase();
       return allTickers
@@ -94,13 +81,9 @@ export function StockSearch({
         );
     }
 
-    // If input is focused but empty, show first 10 stocks
-    if (isOpen && !query) {
-      return getDefaultStocks();
-    }
-
+    // Return empty array if no query
     return [];
-  }, [debouncedQuery, allTickers, isOpen, query, getDefaultStocks]);
+  }, [debouncedQuery, allTickers]);
 
   const suggestions = filteredStocks();
 
@@ -189,19 +172,19 @@ export function StockSearch({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setQuery(value);
-      setIsOpen(true); // Keep dropdown open to show popular stocks or search results
+      setIsOpen(value.length >= 1); // Only open dropdown when user starts typing
       setSelectedIndex(-1);
     },
     []
   );
 
-  // Handle input focus - always open dropdown to show popular stocks or search results
+  // Handle input focus - only open dropdown if there's a query
   const handleInputFocus = useCallback(() => {
     // Don't reopen immediately after a selection
-    if (!justSelectedRef.current) {
+    if (!justSelectedRef.current && query.length >= 1) {
       setIsOpen(true);
     }
-  }, []);
+  }, [query]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -223,7 +206,7 @@ export function StockSearch({
   // Clear search
   const handleClear = useCallback(() => {
     setQuery('');
-    setIsOpen(true); // Keep dropdown open to show all stocks
+    setIsOpen(false); // Close dropdown when clearing
     setSelectedIndex(-1);
     inputRef.current?.focus();
   }, []);
@@ -279,8 +262,8 @@ export function StockSearch({
 
       {/* Help text */}
       <div id='search-help' className='sr-only'>
-        Click to see all stocks or type to search. Use arrow keys to navigate
-        suggestions and Enter to select or deselect stocks.
+        Type to search for stocks. Use arrow keys to navigate suggestions and
+        Enter to select or deselect stocks.
       </div>
       {/* Dropdown with suggestions */}
       {isOpen && (
