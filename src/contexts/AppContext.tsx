@@ -17,10 +17,7 @@ import type {
 
 // Initial state with defaults
 const initialState: AppState = {
-  selectedStocks: [
-    // Default stock as per requirement 10.1
-    { symbol: 'AAPL', name: 'Apple Inc.' },
-  ],
+  selectedStocks: [],
   dateRange: {
     // Default to last 30 days as per APP_CONFIG
     from: subMonths(new Date(), 1),
@@ -114,12 +111,16 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'RESET_STATE':
       return {
-        ...initialState,
-        // Keep the current date range updated
+        selectedStocks: [],
         dateRange: {
           from: subMonths(new Date(), 1),
           to: new Date(),
         },
+        priceType: DEFAULT_PRICE_TYPE,
+        chartData: [],
+        loading: false,
+        error: null,
+        stockSuggestions: [],
       };
 
     default:

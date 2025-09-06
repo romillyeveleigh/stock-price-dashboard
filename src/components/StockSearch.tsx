@@ -22,7 +22,7 @@ interface StockSearchProps {
 
 export function StockSearch({
   className = '',
-  placeholder = 'Search stocks by symbol or company name...',
+  placeholder = `Enter stock name or ticker symbol e.g. 'Apple' or AAPL`,
   disabled = false,
 }: StockSearchProps) {
   const [query, setQuery] = useState('');
