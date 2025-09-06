@@ -7,6 +7,7 @@ import {
   DateRangePicker,
   PriceTypeToggle,
   SelectedStocks,
+  StockChart,
 } from '@/components';
 import { Button } from '@/components/ui/button';
 import {
@@ -137,6 +138,19 @@ function AppContent() {
             </CardHeader>
             <CardContent>
               <SelectedStocks />
+            </CardContent>
+          </Card>
+
+          {/* Stock Chart Demo */}
+          <Card className='w-full max-w-6xl'>
+            <CardHeader>
+              <CardTitle className='text-xl'>Stock Price Chart</CardTitle>
+              <CardDescription>
+                Interactive line chart with price data and volume display
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StockChart />
             </CardContent>
           </Card>
 

@@ -21,3 +21,4 @@ export { StockSearch } from './StockSearch';
 export { DateRangePicker } from './DateRangePicker';
 export { PriceTypeToggle } from './PriceTypeToggle';
 export { SelectedStocks } from './SelectedStocks';
+export { StockChart } from './StockChart';
