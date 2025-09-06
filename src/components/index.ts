@@ -22,3 +22,4 @@ export { DateRangePicker } from './DateRangePicker';
 export { PriceTypeToggle } from './PriceTypeToggle';
 export { SelectedStocks } from './SelectedStocks';
 export { StockChart } from './StockChart';
+export { UrlControls } from './UrlControls';

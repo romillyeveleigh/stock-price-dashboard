@@ -8,6 +8,7 @@ import {
   PriceTypeToggle,
   SelectedStocks,
   StockChart,
+  UrlControls,
 } from '@/components';
 import { Button } from '@/components/ui/button';
 import {
@@ -153,6 +154,9 @@ function AppContent() {
               <StockChart />
             </CardContent>
           </Card>
+
+          {/* URL Controls Demo */}
+          <UrlControls />
 
           <div className='grid w-full max-w-4xl grid-cols-1 gap-6 md:grid-cols-3'>
             <Card>
