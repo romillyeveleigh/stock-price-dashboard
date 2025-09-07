@@ -4,7 +4,6 @@
  */
 
 import { Label } from '@radix-ui/react-label';
-import { useState, useEffect } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 

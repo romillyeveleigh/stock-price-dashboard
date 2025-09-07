@@ -40,9 +40,10 @@ export function ChartLoadingSkeleton({
   const { isMobile, isTablet } = useResponsive();
   const chartHeight = height || isMobile ? 400 : isTablet ? 500 : 600;
   return (
-    <div className={`space-y-4 p-6 ${className}`} style={{ height: chartHeight }}>
-      
-
+    <div
+      className={`space-y-4 p-6 ${className}`}
+      style={{ height: chartHeight }}
+    >
       {/* Chart area skeleton */}
       <div className='relative flex-1 space-y-4'>
         {/* Y-axis labels */}
@@ -92,46 +93,6 @@ export function SearchLoadingSkeleton({ className = '' }: LoadingStateProps) {
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-// Sidebar loading state
-export function SidebarLoadingSkeleton({ className = '' }: LoadingStateProps) {
-  return (
-    <div className={`space-y-6 p-6 ${className}`}>
-      {/* Search section */}
-      <div className='space-y-3'>
-        <Skeleton className='h-5 w-24' />
-        <Skeleton className='h-10 w-full' />
-      </div>
-
-      {/* Selected stocks section */}
-      <div className='space-y-3'>
-        <Skeleton className='h-5 w-32' />
-        <div className='space-y-2'>
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-        </div>
-      </div>
-
-      {/* Date range section */}
-      <div className='space-y-3'>
-        <Skeleton className='h-5 w-24' />
-        <div className='grid grid-cols-2 gap-2'>
-          <Skeleton className='h-10 w-full' />
-          <Skeleton className='h-10 w-full' />
-        </div>
-      </div>
-
-      {/* Price type section */}
-      <div className='space-y-3'>
-        <Skeleton className='h-5 w-20' />
-        <div className='grid grid-cols-2 gap-2'>
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-        </div>
-      </div>
     </div>
   );
 }
