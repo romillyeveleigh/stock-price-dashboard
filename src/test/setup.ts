@@ -94,6 +94,14 @@ jest.mock('highcharts/highstock', () => ({
   },
 }));
 
+jest.mock('@/constants', () => ({
+  DEV: false,
+  NODE_ENV: 'test',
+  POLYGON_API_KEY: 'test-api-key',
+  PROD: false,
+  USER_NODE_ENV: 'test',
+}));
+
 jest.mock('highcharts-react-official', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => null),

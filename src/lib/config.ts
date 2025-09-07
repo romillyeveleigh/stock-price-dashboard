@@ -2,29 +2,14 @@
  * Application configuration
  */
 
+import { DEV, NODE_ENV, POLYGON_API_KEY, PROD } from '@/constants';
 import type { ApiClientConfig, RateLimitConfig } from '@/types';
 
-// Environment variables with defaults
-// Use process.env in test environment, import.meta.env in browser
-const getEnvVar = (key: string, defaultValue: string | boolean = '') => {
-  // In test environment, use process.env
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[key] || defaultValue;
-  }
-
-  // In browser environment, use Vite's environme
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[key] || defaultValue;
-  }
-
-  return defaultValue;
-};
-
 export const ENV = {
-  POLYGON_API_KEY: getEnvVar('VITE_POLYGON_API_KEY', '') as string,
-  NODE_ENV: getEnvVar('NODE_ENV', 'development') as string,
-  DEV: getEnvVar('NODE_ENV', 'development') === 'development',
-  PROD: getEnvVar('NODE_ENV', 'development') === 'production',
+  POLYGON_API_KEY: POLYGON_API_KEY,
+  NODE_ENV: NODE_ENV,
+  DEV: DEV,
+  PROD: PROD,
 } as const;
 
 // Debug logging in development
