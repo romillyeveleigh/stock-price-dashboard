@@ -17,10 +17,10 @@ export function Layout() {
   return (
     <div className='flex h-screen bg-background'>
       {/* Main Content Area */}
-      <div className='flex flex-1 flex-col overflow-y-auto'>
+      <div className='flex flex-1 flex-col overflow-y-auto '>
         {/* Header */}
-        <header className='flex items-center justify-between border-b bg-card px-4 py-3 md:px-6 lg:px-8 flex-shrink-0'>
-          <div className='w-full max-w-7xl mx-auto'>
+        <header className='flex items-center justify-between border-b bg-card px-4 py-2 md:px-24 lg:px-60 flex-shrink-0'>
+          <div className='w-full max-w-6xl mx-auto'>
             <div className='flex items-center gap-4'>
               <div>
                 <h1 className='text-2xl font-semibold text-foreground md:text-3xl'>
@@ -34,12 +34,12 @@ export function Layout() {
           </div>
         </header>
 
-        {/* Search Stocks Section - Above Chart */}
-        <main className='bg-card px-4 py-4 md:px-6 lg:px-8 flex-shrink-0'>
-          <div className='w-full max-w-7xl mx-auto'>
+        {/* Search Stocks Section */}
+        <main className='bg-card px-4 py-3 md:px-24 lg:px-60 flex-shrink-0'>
+          <div className='w-full max-w-6xl mx-auto'>
             <Card>
-              <CardContent className='space-y-4 mt-6'>
-                <div className='mt-4'>
+              <CardContent className='space-y-4 mt-4'>
+                <div className='mt-0'>
                   <Label htmlFor='stock-search' className='text-sm font-medium'>
                     Select Stocks
                   </Label>
@@ -55,8 +55,8 @@ export function Layout() {
         </main>
 
         {/* Footer */}
-        <footer className='border-t bg-card px-4 py-3 md:px-6 lg:px-8 flex-shrink-0'>
-          <div className='w-full max-w-7xl mx-auto'>
+        <footer className='border-t bg-card px-4 py-2 md:px-24 lg:px-48 flex-shrink-0'>
+          <div className='w-full max-w-5xl mx-auto'>
             <div className='flex flex-col items-center justify-center space-y-1 text-center'>
               <p className='text-xs text-muted-foreground'>
                 © 2025 Romilly Eveleigh Stock Price Dashboard

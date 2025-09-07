@@ -47,9 +47,9 @@ export const APP_CONFIG = {
 
   // Chart configuration
   DEFAULT_CHART_HEIGHT: {
-    mobile: 400,
-    tablet: 500,
-    desktop: 600,
+    mobile: 320,  
+    tablet: 400,  
+    desktop: 480, 
   },
   CHART_COLORS: [
     '#3b82f6', // Professional blue

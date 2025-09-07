@@ -103,7 +103,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
           states: {
             hover: {
               enabled: true,
-              radius: 5,
+              radius: 4,
             },
           },
         },
@@ -122,7 +122,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
               ? APP_CONFIG.DEFAULT_CHART_HEIGHT.tablet
               : APP_CONFIG.DEFAULT_CHART_HEIGHT.desktop,
         backgroundColor: '#fafafa',
-        marginTop: 20,
+        marginTop: 16,
         style: {
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
         },
@@ -142,13 +142,13 @@ export function StockChart({ className = '', height }: StockChartProps) {
           text: 'Date',
           style: {
             color: '#6b7280',
-            fontSize: '12px',
+            fontSize: '10px',
           },
         },
         labels: {
           style: {
             color: '#6b7280',
-            fontSize: '11px',
+            fontSize: '9px',
           },
         },
         gridLineColor: '#e5e7eb',
@@ -161,16 +161,16 @@ export function StockChart({ className = '', height }: StockChartProps) {
             text: `Price (${state.priceType.toUpperCase()}) - USD`,
             style: {
               color: '#6b7280',
-              fontSize: '12px',
+              fontSize: '10px',
             },
-            margin: 20, // Add space between y-axis and title
+            margin: 16,
           },
           opposite: true,
           gridLineColor: '#e5e7eb',
           labels: {
             style: {
               color: '#6b7280',
-              fontSize: '11px',
+              fontSize: '9px', // Reduced from 11px
             },
             formatter: function () {
               return '$' + Highcharts.numberFormat(this.value as number, 0);
@@ -183,8 +183,9 @@ export function StockChart({ className = '', height }: StockChartProps) {
         shared: true,
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         borderColor: '#cccccc',
-        borderRadius: 4,
+        borderRadius: 3,
         shadow: true,
+        style: { fontSize: '11px' },
         formatter: function () {
           const date = new Date(this.x as number);
           const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -220,7 +221,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
         shadow: false,
         itemStyle: {
           color: '#374151',
-          fontSize: '12px',
+          fontSize: '10px',
           fontWeight: '500',
         },
         itemHoverStyle: {
@@ -261,7 +262,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
               rangeSelector: {
                 buttonTheme: {
                   style: {
-                    fontSize: '10px',
+                    fontSize: '8px',
                   },
                 },
               },
