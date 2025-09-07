@@ -122,6 +122,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
               ? APP_CONFIG.DEFAULT_CHART_HEIGHT.tablet
               : APP_CONFIG.DEFAULT_CHART_HEIGHT.desktop,
         backgroundColor: '#fafafa',
+        marginTop: 20,
         style: {
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
         },
