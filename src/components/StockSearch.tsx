@@ -4,7 +4,13 @@
  */
 
 import { Search, X, TrendingUp } from 'lucide-react';
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from 'react';
 
 import { NoSearchResults } from '@/components/EmptyStates';
 import { SearchError } from '@/components/ErrorStates';
@@ -182,7 +188,7 @@ export function StockSearch({
     setQuery('');
     setIsOpen(false); // Close dropdown when clearing
     setSelectedIndex(-1);
-    inputRef.current?.focus();
+    // Remove the focus() call - user clicked X to clear, they don't need focus back
   }, []);
 
   // Loading state
@@ -213,7 +219,7 @@ export function StockSearch({
         />
 
         {/* Clear button */}
-        {query && (
+        {query && !isLoading && (
           <Button
             type='button'
             variant='ghost'
@@ -239,6 +245,7 @@ export function StockSearch({
         Type to search for stocks. Use arrow keys to navigate suggestions and
         Enter to select or deselect stocks.
       </div>
+
       {/* Dropdown with suggestions */}
       {isOpen && (
         <Card
@@ -255,7 +262,7 @@ export function StockSearch({
             )}
 
             {/* No results */}
-            {!tickersError &&
+            {!tickersError && !tickersLoading &&
               suggestions.length === 0 &&
               debouncedQuery.length >= 3 && (
                 <NoSearchResults
@@ -276,13 +283,11 @@ export function StockSearch({
               )}
 
             {/* Minimum character message */}
-            {!tickersError &&
-              query.length > 0 &&
-              query.length < 3 && (
-                <div className='p-4 text-center text-sm text-muted-foreground'>
-                  Type at least 3 characters to search for stocks
-                </div>
-              )}
+            {!tickersError && query.length > 0 && query.length < 3 && (
+              <div className='p-4 text-center text-sm text-muted-foreground'>
+                Type at least 3 characters to search for stocks
+              </div>
+            )}
 
             {/* Search suggestions */}
             {suggestions.length > 0 && (
