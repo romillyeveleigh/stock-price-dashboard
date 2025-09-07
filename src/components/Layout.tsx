@@ -12,6 +12,7 @@ import { PriceTypeToggle } from './PriceTypeToggle';
 import { SelectedStocks } from './SelectedStocks';
 import { StockChart } from './StockChart';
 import { StockSearch } from './StockSearch';
+import { Label } from '@radix-ui/react-label';
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -54,10 +55,13 @@ export function Layout({ children }: LayoutProps) {
 
         {/* Search Stocks Section - Above Chart */}
         <div className='bg-card px-4 py-4 md:px-6 flex-shrink-0'>
-          <Card>
-            <CardContent className='space-y-4'>
-              <StockSearch />
-              <SelectedStocks variant='compact' />
+          <Card >
+            <CardContent className='space-y-4 mt-6'>
+              <div className='mt-4'>
+                <Label htmlFor='stock-search' className='text-sm font-medium'>Select Stocks</Label>
+                <StockSearch />
+              </div>
+              <SelectedStocks />
               <DateRangePicker />
               <PriceTypeToggle />
               <StockChart className='h-full w-full' />

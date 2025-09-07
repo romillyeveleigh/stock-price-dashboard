@@ -84,7 +84,7 @@ export function DateRangePicker({
   return (
     <div className={`space-y-3 ${className}`}>
       {/* First Line: Date Range Inputs with inline labels - responsive */}
-      <div className='flex flex-col gap-3 sm:flex-row sm:items-center mt-6'>
+      <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
         {/* From Date */}
         <div className='flex items-center gap-2'>
           <Label

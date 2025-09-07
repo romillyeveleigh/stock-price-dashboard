@@ -46,12 +46,12 @@ export function SelectedStocks({
   };
 
   return (
-    <div className={`flex flex-wrap gap-1 ${className} min-h-[22px]`}>
+    <div className={`flex flex-wrap gap-1 ${className}`}>
       {selectedStocks.map((stock, index) => (
         <Badge
           key={stock.symbol}
           variant='secondary'
-          className='text-xs'
+          className='text-sm'
           style={{ backgroundColor: getColor(index) }}
         >
           {stock.symbol} {stock.name && `- ${stock.name}`}
@@ -59,7 +59,7 @@ export function SelectedStocks({
             <Button
               variant='ghost'
               size='sm'
-              className='ml-1 h-3 w-3 p-0 hover:bg-destructive hover:text-destructive-foreground'
+              className='ml-1 h-3 w-3 p-0 hover:bg-primary hover:text-primary-foreground'
               onClick={() => handleRemoveStock(stock.symbol)}
               onKeyDown={e => handleKeyDown(e, stock.symbol)}
               aria-label={`Remove ${stock.symbol} from selection`}
