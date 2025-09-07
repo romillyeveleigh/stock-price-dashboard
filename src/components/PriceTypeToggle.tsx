@@ -48,11 +48,14 @@ export function PriceTypeToggle({
     <div className={`${className}`}>
       {/* Label */}
       <div className='mb-2'>
-        <label htmlFor='price-type' className='text-sm font-medium text-foreground'>
+        <label
+          htmlFor='price-type'
+          className='text-sm font-medium text-foreground'
+        >
           Price Type
         </label>
       </div>
-      
+
       {/* Radio Button Group */}
       <div
         role='radiogroup'
@@ -66,7 +69,7 @@ export function PriceTypeToggle({
             <div
               key={option.value}
               className={`
-                relative flex cursor-pointer items-center rounded border px-4 py-2 transition-all duration-200
+                relative flex cursor-pointer items-center border px-4 py-2 transition-all duration-200
                 ${
                   isSelected
                     ? 'border-primary bg-primary text-primary-foreground'
@@ -82,9 +85,7 @@ export function PriceTypeToggle({
               tabIndex={isSelected ? 0 : -1}
             >
               {/* Label */}
-              <span className='text-xs font-medium'>
-                {option.label}
-              </span>
+              <span className='text-xs font-medium'>{option.label}</span>
             </div>
           );
         })}
