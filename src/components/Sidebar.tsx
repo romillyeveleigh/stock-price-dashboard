@@ -1,18 +1,12 @@
 /**
  * Sidebar component for desktop layout
- * Contains stock search, date range picker, and price type controls
+ * Contains additional settings and controls
  */
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-import { DateRangePicker } from './DateRangePicker';
-import { PriceTypeToggle } from './PriceTypeToggle';
-import { SelectedStocks } from './SelectedStocks';
-import { StockSearch } from './StockSearch';
 
 interface SidebarProps {
   className?: string;
@@ -56,43 +50,17 @@ export function Sidebar({ className = '' }: SidebarProps) {
           {/* Header */}
           <div>
             <h2 className='text-lg font-semibold text-foreground'>
-              Stock Analysis
+              Additional Settings
             </h2>
             <p className='text-sm text-muted-foreground'>
-              Configure your chart settings
+              Additional configuration options
             </p>
           </div>
 
-          {/* Stock Search Section */}
-          <Card>
-            <CardHeader className='pb-3'>
-              <CardTitle className='text-base'>Search Stocks</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <StockSearch />
-              <SelectedStocks variant='compact' />
-            </CardContent>
-          </Card>
-
-          {/* Date Range Section */}
-          <Card>
-            <CardHeader className='pb-3'>
-              <CardTitle className='text-base'>Date Range</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DateRangePicker />
-            </CardContent>
-          </Card>
-
-          {/* Price Type Section */}
-          <Card>
-            <CardHeader className='pb-3'>
-              <CardTitle className='text-base'>Price Type</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PriceTypeToggle />
-            </CardContent>
-          </Card>
+          {/* Placeholder for future settings */}
+          <div className='flex-1 flex items-center justify-center text-muted-foreground'>
+            <p className='text-sm'>No additional settings available</p>
+          </div>
         </div>
       </div>
 

@@ -3,11 +3,10 @@
  * Provides date input controls with quick preset buttons and accessibility features
  */
 
-import { format } from 'date-fns';
+import { format, subYears } from 'date-fns';
 import { Calendar, AlertCircle } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,6 @@ export function DateRangePicker({
     dateRange,
     datePresets,
     activePreset,
-    isCurrentDateSelected,
     updateDateRange,
     applyPreset,
     validateDateRange,
@@ -51,9 +49,8 @@ export function DateRangePicker({
       const error = validateDateRange(fromDate, toDate);
       setValidationError(error);
 
-      if (!error) {
-        updateDateRange(fromDate, toDate);
-      }
+      // Always update the date range, even with validation errors
+      updateDateRange(fromDate, toDate);
     }
   };
 
@@ -68,9 +65,8 @@ export function DateRangePicker({
       const error = validateDateRange(fromDate, toDate);
       setValidationError(error);
 
-      if (!error) {
-        updateDateRange(fromDate, toDate);
-      }
+      // Always update the date range, even with validation errors
+      updateDateRange(fromDate, toDate);
     }
   };
 
@@ -85,13 +81,17 @@ export function DateRangePicker({
   // Get today's date for max attribute
   const today = format(new Date(), 'yyyy-MM-dd');
 
+  // Polygon API max date range is 2 years from today for free tier
+  const MAX_DATE_RANGE_YEARS = 2;
+  const min = format(subYears(new Date(), MAX_DATE_RANGE_YEARS), 'yyyy-MM-dd');
+
   return (
-    <div className={`space-y-4 ${className}`}>
-      {/* Date Range Inputs */}
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+    <div className={`space-y-3 ${className}`}>
+      {/* First Line: Date Range Inputs with inline labels - responsive */}
+      <div className='flex flex-col gap-3 sm:flex-row sm:items-center mt-6'>
         {/* From Date */}
-        <div className='space-y-2'>
-          <Label htmlFor='from-date' className='text-sm font-medium'>
+        <div className='flex items-center gap-2'>
+          <Label htmlFor='from-date' className='text-sm font-medium whitespace-nowrap'>
             From Date
           </Label>
           <div className='relative'>
@@ -102,6 +102,7 @@ export function DateRangePicker({
               value={fromInput}
               onChange={handleFromDateChange}
               max={today}
+              min={min}
               disabled={disabled}
               className='pl-10'
               aria-label='Select start date'
@@ -111,8 +112,8 @@ export function DateRangePicker({
         </div>
 
         {/* To Date */}
-        <div className='space-y-2'>
-          <Label htmlFor='to-date' className='text-sm font-medium'>
+        <div className='flex items-center gap-2'>
+          <Label htmlFor='to-date' className='text-sm font-medium whitespace-nowrap'>
             To Date
           </Label>
           <div className='relative'>
@@ -132,38 +133,22 @@ export function DateRangePicker({
         </div>
       </div>
 
-      {/* Quick Preset Buttons */}
-      <div className='space-y-2'>
-        <Label className='text-sm font-medium'>Quick Presets</Label>
-        <div className='flex flex-wrap gap-2'>
-          {datePresets.map(preset => (
-            <Button
-              key={preset.value}
-              variant={activePreset === preset.value ? 'default' : 'outline'}
-              size='sm'
-              onClick={() => handlePresetClick(preset)}
-              disabled={disabled}
-              className='text-xs'
-              aria-label={`Select ${preset.label} date range`}
-            >
-              {preset.label}
-            </Button>
-          ))}
-        </div>
+      {/* Second Line: Quick Preset Buttons */}
+      <div className='flex flex-wrap gap-2'>
+        {datePresets.map(preset => (
+          <Button
+            key={preset.value}
+            variant={activePreset === preset.value ? 'default' : 'outline'}
+            size='sm'
+            onClick={() => handlePresetClick(preset)}
+            disabled={disabled}
+            className='text-xs px-3 py-1.5'
+            aria-label={`Select ${preset.label} date range`}
+          >
+            {preset.label}
+          </Button>
+        ))}
       </div>
-
-      {/* Current Date Warning */}
-      {isCurrentDateSelected && (
-        <Card className='border-amber-200 bg-amber-50'>
-          <CardContent className='flex items-center gap-2 p-3'>
-            <AlertCircle className='h-4 w-4 text-amber-600' />
-            <div className='text-sm text-amber-800'>
-              <strong>Note:</strong> Today&apos;s data may be incomplete until
-              market close.
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Validation Error */}
       {validationError && (
@@ -174,19 +159,6 @@ export function DateRangePicker({
           </CardContent>
         </Card>
       )}
-
-      {/* Selected Range Display */}
-      <div className='flex items-center justify-between text-sm text-muted-foreground'>
-        <div id='date-range-help'>
-          Selected range: {format(dateRange.from, 'MMM dd, yyyy')} -{' '}
-          {format(dateRange.to, 'MMM dd, yyyy')}
-        </div>
-        {activePreset && (
-          <Badge variant='secondary' className='text-xs'>
-            {activePreset}
-          </Badge>
-        )}
-      </div>
     </div>
   );
 }

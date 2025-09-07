@@ -1,11 +1,11 @@
 /**
- * StockChart component with Highcharts integration
- * Displays line chart with price data and volume bars
+ * StockChart component with Highcharts Stock integration
+ * Displays line chart with price data, volume bars, and range selector
  */
 
-import Highcharts from 'highcharts';
+import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 
 import { ChartEmptyState, NoDataAvailable } from '@/components/EmptyStates';
 import { ChartError } from '@/components/ErrorStates';
@@ -42,12 +42,11 @@ export function StockChart({
     stockSymbols.length > 0
   );
 
-  // Check if any data is delayed
-  const hasDelayedData = useMemo(() => {
-    return stockPricesData.some(stockData => stockData?.metadata?.isDelayed);
-  }, [stockPricesData]);
+  useLayoutEffect(() => {
+    chartRef.current?.chart?.redraw();
+  }, [state.dateRange]);
 
-  // Transform data for Highcharts
+  // Transform data for Highcharts Stock
   const chartOptions = useMemo((): Highcharts.Options => {
     const series: Highcharts.SeriesOptionsType[] = [];
 
@@ -60,10 +59,7 @@ export function StockChart({
         point[state.priceType], // Use selected price type (open, high, low, close)
       ]);
 
-      const volumeData = stockData.data.map(point => [
-        new Date(point.date).getTime(),
-        point.volume,
-      ]);
+     
 
       // Add price series
       series.push({
@@ -81,19 +77,10 @@ export function StockChart({
               radius: 5,
             },
           },
+
         },
       } as Highcharts.SeriesLineOptions);
 
-      // Add volume series
-      series.push({
-        type: 'column',
-        name: `${stockData.symbol} Volume`,
-        data: volumeData,
-        color: APP_CONFIG.CHART_COLORS[index % APP_CONFIG.CHART_COLORS.length],
-        yAxis: 1,
-        showInLegend: false,
-        opacity: 0.3,
-      } as Highcharts.SeriesColumnOptions);
     });
 
     return {
@@ -101,31 +88,20 @@ export function StockChart({
         type: 'line',
         height,
         backgroundColor: '#fafafa',
-        zooming: {
-          type: 'x',
-        },
         style: {
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
         },
-      },
-      title: {
-        text: 'Stock Price Analysis',
-        style: {
-          fontSize: '18px',
-          fontWeight: '600',
-          color: '#1f2937',
+        zooming: {
+          type: 'x',
+        },
+        panning: {
+          type: 'x',
         },
       },
-      subtitle: hasDelayedData
-        ? {
-            text: '⚠️ Some data may be delayed (market hours or recent data)',
-            style: {
-              fontSize: '12px',
-              color: '#f59e0b',
-              fontWeight: '500',
-            },
-          }
-        : undefined,
+      title: {
+        text: '',
+        
+      },
       xAxis: {
         type: 'datetime',
         title: {
@@ -145,6 +121,7 @@ export function StockChart({
         crosshair: true,
       },
       yAxis: [
+        
         {
           // Price axis
           title: {
@@ -153,9 +130,10 @@ export function StockChart({
               color: '#6b7280',
               fontSize: '12px',
             },
+            margin: 20, // Add space between y-axis and title
           },
-          height: '75%',
-          lineWidth: 1,
+          opposite: true,
+          // lineWidth: 1,
           gridLineColor: '#e5e7eb',
           labels: {
             style: {
@@ -168,38 +146,22 @@ export function StockChart({
           },
           crosshair: true,
         },
-        {
-          // Volume axis
-          title: {
-            text: 'Volume (M)',
-            style: {
-              color: '#6b7280',
-              fontSize: '12px',
-            },
-          },
-          top: '80%',
-          height: '20%',
-          offset: 0,
-          lineWidth: 1,
-          gridLineColor: '#e5e7eb',
-          labels: {
-            style: {
-              color: '#6b7280',
-              fontSize: '11px',
-            },
-            formatter: function () {
-              return (
-                Highcharts.numberFormat((this.value as number) / 1000000, 1) +
-                'M'
-              );
-            },
-          },
-        },
       ],
       tooltip: {
         shared: true,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#cccccc',
+        borderRadius: 4,
+        shadow: true,
         formatter: function () {
-          let tooltip = `<b>${Highcharts.dateFormat('%Y-%m-%d', this.x as number)}</b><br/>`;
+          const date = new Date(this.x as number);
+          const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+          const day = date.getDate();
+          const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+          const year = date.getFullYear();
+          const formattedDate = `${dayName} ${day} ${monthName} ${year}`;
+          
+          let tooltip = `<b>${formattedDate}</b><br/>`;
 
           this.points?.forEach(point => {
             if (point.series.name.includes('Volume')) {
@@ -213,10 +175,10 @@ export function StockChart({
         },
       },
       legend: {
-        enabled: true,
-        align: 'center',
+        enabled: false,
+        align: 'left',
         verticalAlign: 'top',
-        layout: 'horizontal',
+        layout: 'vertical',
         backgroundColor: '#ffffff',
         borderColor: '#e5e7eb',
         borderWidth: 1,
@@ -262,30 +224,22 @@ export function StockChart({
                 verticalAlign: 'bottom',
                 layout: 'horizontal',
               },
+              rangeSelector: {
+                buttonTheme: {
+                  style: {
+                    fontSize: '10px',
+                  },
+                },
+              },
             },
           },
         ],
-      },
-      exporting: {
-        enabled: true,
-        buttons: {
-          contextButton: {
-            menuItems: [
-              'viewFullscreen',
-              'separator',
-              'downloadPNG',
-              'downloadJPEG',
-              'downloadPDF',
-              'downloadSVG',
-            ],
-          },
-        },
       },
       credits: {
         enabled: false,
       },
     };
-  }, [stockPricesData, state.priceType, height, hasDelayedData]);
+  }, [stockPricesData, state.priceType, height]);
 
   // Handle chart cleanup
   useEffect(() => {
@@ -360,6 +314,7 @@ export function StockChart({
   return (
     <div className={className}>
       <HighchartsReact
+      key={`chart-${state.dateRange.from.toISOString()}-${state.dateRange.to.toISOString()}`}
         ref={chartRef}
         highcharts={Highcharts}
         options={chartOptions}
@@ -367,3 +322,4 @@ export function StockChart({
     </div>
   );
 }
+
