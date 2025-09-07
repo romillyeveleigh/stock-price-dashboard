@@ -15,65 +15,25 @@ import { PolygonApiService } from '../services/polygonApi';
 const polygonApi = new PolygonApiService();
 
 /**
- * Hook to fetch all available tickers with aggressive caching
- * EFFICIENCY: Single API call on app load, cached for 24 hours
+ * Hook to search for tickers using server-side search
+ * OPTIMIZATION: Only searches when user types 3+ characters, uses server-side filtering
  */
-export function useAllTickers() {
+export function useTickerSearch(query: string) {
   return useQuery({
-    queryKey: ['tickers', 'all'],
-    queryFn: () => polygonApi.getAllTickers(),
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours - ticker list changes infrequently
-    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days - keep cached for a week
+    queryKey: ['tickers', 'search', query.trim()],
+    queryFn: () => polygonApi.searchTickers(query),
+    enabled: query.length >= 3, // Only search when user types 3+ characters
+    staleTime: 5 * 60 * 1000, // 5 minutes - search results can be cached briefly
+    gcTime: 10 * 60 * 1000, // 10 minutes - keep in memory
     retry: (failureCount, error) => {
       // Never retry rate limit errors to prevent API spam
       if ((error as Error)?.message?.includes('rate limit')) return false;
       if ((error as Error)?.message?.includes('API_RATE_LIMIT')) return false;
       if ((error as Error)?.message?.includes('UNAUTHORIZED')) return false;
-      return failureCount < 2; // Conservative retry for other errors
+      return failureCount < 2; // Limited retries for search
     },
-    refetchOnWindowFocus: false, // Don't refetch on window focus
-    refetchOnMount: false, // Don't refetch on component mount if data exists
+    refetchOnWindowFocus: false,
   });
-}
-
-/**
- * Client-side stock search hook to minimize API usage
- * EFFICIENCY: No API calls, searches cached ticker list
- */
-export function useStockSearch(query: string, allTickers: USStock[] = []) {
-  return useMemo(() => {
-    if (!query || query.length < APP_CONFIG.SEARCH_MIN_LENGTH) {
-      return [];
-    }
-
-    const searchTerm = query.toLowerCase().trim();
-
-    return allTickers
-      .filter(
-        stock =>
-          stock.symbol.toLowerCase().includes(searchTerm) ||
-          stock.name.toLowerCase().includes(searchTerm)
-      )
-      .slice(0, 10) // Limit results for performance
-      .sort((a, b) => {
-        // Prioritize symbol matches
-        const aSymbolMatch = a.symbol.toLowerCase().startsWith(searchTerm);
-        const bSymbolMatch = b.symbol.toLowerCase().startsWith(searchTerm);
-
-        if (aSymbolMatch && !bSymbolMatch) return -1;
-        if (!aSymbolMatch && bSymbolMatch) return 1;
-
-        // Then prioritize exact matches
-        const aExactMatch = a.symbol.toLowerCase() === searchTerm;
-        const bExactMatch = b.symbol.toLowerCase() === searchTerm;
-
-        if (aExactMatch && !bExactMatch) return -1;
-        if (!aExactMatch && bExactMatch) return 1;
-
-        // Finally sort alphabetically
-        return a.symbol.localeCompare(b.symbol);
-      });
-  }, [query, allTickers]);
 }
 
 /**
@@ -163,10 +123,10 @@ export function useMultipleStockPrices(
 }
 
 /**
- * Hook for popular stocks with pre-loaded data
- * EFFICIENCY: Uses popular stocks as fallback when search is empty
+ * Hook for popular stocks suggestions
+ * EFFICIENCY: Returns static list of popular stock symbols for suggestions
  */
-export function usePopularStocks(allTickers: USStock[] = []) {
+export function usePopularStocks() {
   return useMemo(() => {
     const popularSymbols = [
       'AAPL',
@@ -179,8 +139,14 @@ export function usePopularStocks(allTickers: USStock[] = []) {
       'NFLX',
     ];
 
-    return popularSymbols
-      .map(symbol => allTickers.find(stock => stock.symbol === symbol))
-      .filter((stock): stock is USStock => stock !== undefined);
-  }, [allTickers]);
+    return popularSymbols.map(symbol => ({
+      symbol,
+      name: '', // Will be filled when user searches
+      market: 'stocks' as const,
+      locale: 'us' as const,
+      active: true,
+      type: 'CS',
+      primaryExchange: '',
+    }));
+  }, []);
 }

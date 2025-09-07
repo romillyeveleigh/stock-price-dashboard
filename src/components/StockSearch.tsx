@@ -4,7 +4,7 @@
  */
 
 import { Search, X, TrendingUp } from 'lucide-react';
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 
 import { NoSearchResults } from '@/components/EmptyStates';
 import { SearchError } from '@/components/ErrorStates';
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useDebounce, useAllTickers, useStockSelection } from '@/hooks';
+import { useDebounce, useTickerSearch, useStockSelection } from '@/hooks';
 import { APP_CONFIG } from '@/lib';
 import type { Stock } from '@/types';
 
@@ -38,12 +38,12 @@ export function StockSearch({
   // Debounce search query to prevent excessive API calls
   const debouncedQuery = useDebounce(query, APP_CONFIG.DEBOUNCE_DELAY);
 
-  // Get all tickers and stock selection functionality
+  // Get search results and stock selection functionality
   const {
-    data: allTickers = [],
+    data: searchResults = [],
     isLoading: tickersLoading,
     error: tickersError,
-  } = useAllTickers();
+  } = useTickerSearch(debouncedQuery);
   const {
     selectedStocks,
     canAddStock,
@@ -52,42 +52,14 @@ export function StockSearch({
     isStockSelected,
   } = useStockSelection();
 
-  // Filter stocks based on search query only
-  const filteredStocks = useCallback((): Stock[] => {
-    // Only show results if there's a search query (1+ characters)
-    if (debouncedQuery && debouncedQuery.length >= 1) {
-      const searchTerm = debouncedQuery.toLowerCase();
-      return allTickers
-        .filter(
-          stock =>
-            stock.symbol.toLowerCase().includes(searchTerm) ||
-            stock.name.toLowerCase().includes(searchTerm)
-        )
-        .slice(0, 10) // Limit results for performance
-        .sort((a, b) => {
-          // Prioritize ticker symbol matches
-          const aTickerMatch = a.symbol.toLowerCase().startsWith(searchTerm);
-          const bTickerMatch = b.symbol.toLowerCase().startsWith(searchTerm);
-
-          if (aTickerMatch && !bTickerMatch) return -1;
-          if (!aTickerMatch && bTickerMatch) return 1;
-
-          return a.symbol.localeCompare(b.symbol);
-        })
-        .map(
-          (usStock): Stock => ({
-            symbol: usStock.symbol,
-            name: usStock.name,
-            market: usStock.market,
-          })
-        );
-    }
-
-    // Return empty array if no query
-    return [];
-  }, [debouncedQuery, allTickers]);
-
-  const suggestions = filteredStocks();
+  // Convert search results to Stock format
+  const suggestions: Stock[] = useMemo(() => {
+    return searchResults.map(stock => ({
+      symbol: stock.symbol,
+      name: stock.name,
+      market: stock.market,
+    }));
+  }, [searchResults]);
 
   // Handle stock selection and deselection
   const handleToggleStock = useCallback(
@@ -174,16 +146,16 @@ export function StockSearch({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setQuery(value);
-      setIsOpen(value.length >= 1); // Only open dropdown when user starts typing
+      setIsOpen(value.length >= 3); // Only open dropdown when user types 3+ characters
       setSelectedIndex(-1);
     },
     []
   );
 
-  // Handle input focus - only open dropdown if there's a query
+  // Handle input focus - only open dropdown if there's a query with 3+ characters
   const handleInputFocus = useCallback(() => {
     // Don't reopen immediately after a selection
-    if (!justSelectedRef.current && query.length >= 1) {
+    if (!justSelectedRef.current && query.length >= 3) {
       setIsOpen(true);
     }
   }, [query]);
@@ -215,7 +187,7 @@ export function StockSearch({
 
   // Loading state
   const isLoading =
-    tickersLoading || (debouncedQuery !== query && query.length >= 1);
+    tickersLoading || (debouncedQuery !== query && query.length >= 3);
 
   return (
     <div className={`relative ${className}`}>
@@ -285,7 +257,7 @@ export function StockSearch({
             {/* No results */}
             {!tickersError &&
               suggestions.length === 0 &&
-              debouncedQuery.length >= 1 && (
+              debouncedQuery.length >= 3 && (
                 <NoSearchResults
                   query={debouncedQuery}
                   suggestions={[
@@ -303,15 +275,22 @@ export function StockSearch({
                 />
               )}
 
-            {/* Search suggestions or popular stocks */}
+            {/* Minimum character message */}
+            {!tickersError &&
+              query.length > 0 &&
+              query.length < 3 && (
+                <div className='p-4 text-center text-sm text-muted-foreground'>
+                  Type at least 3 characters to search for stocks
+                </div>
+              )}
+
+            {/* Search suggestions */}
             {suggestions.length > 0 && (
               <div role='listbox' aria-label='Stock suggestions'>
-                {/* Header for default stocks when no query */}
-                {!query && (
-                  <div className='border-b bg-muted/20 px-3 py-2 text-xs font-medium text-muted-foreground'>
-                    All Stocks
-                  </div>
-                )}
+                {/* Header for search results */}
+                <div className='border-b bg-muted/20 px-3 py-2 text-xs font-medium text-muted-foreground'>
+                  Search Results
+                </div>
                 {suggestions.map((stock, index) => {
                   const isSelected = index === selectedIndex;
                   const isAlreadySelected = isStockSelected(stock.symbol);

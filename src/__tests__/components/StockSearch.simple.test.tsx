@@ -13,12 +13,12 @@ import * as hooks from '../../hooks';
 // Mock the hooks
 jest.mock('../../hooks', () => ({
   ...jest.requireActual('../../hooks'),
-  useAllTickers: jest.fn(),
+  useTickerSearch: jest.fn(),
   useDebounce: jest.fn(),
 }));
 
-const mockUseAllTickers = hooks.useAllTickers as jest.MockedFunction<
-  typeof hooks.useAllTickers
+const mockUseTickerSearch = hooks.useTickerSearch as jest.MockedFunction<
+  typeof hooks.useTickerSearch
 >;
 const mockUseDebounce = hooks.useDebounce as jest.MockedFunction<
   typeof hooks.useDebounce
@@ -65,11 +65,11 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 describe('StockSearch', () => {
   beforeEach(() => {
     // Reset mocks
-    mockUseAllTickers.mockReturnValue({
+    mockUseTickerSearch.mockReturnValue({
       data: mockTickers,
       isLoading: false,
       error: null,
-    } as ReturnType<typeof hooks.useAllTickers>);
+    } as ReturnType<typeof hooks.useTickerSearch>);
 
     // Mock debounce to return the value immediately
     mockUseDebounce.mockImplementation(value => value);

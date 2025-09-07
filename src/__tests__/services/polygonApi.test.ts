@@ -47,8 +47,8 @@ describe('PolygonApiService', () => {
     });
   });
 
-  describe('getAllTickers', () => {
-    it('should fetch and transform ticker data', async () => {
+  describe('searchTickers', () => {
+    it('should search and transform ticker data', async () => {
       const mockResponse = {
         status: 'OK',
         results: [
@@ -69,7 +69,7 @@ describe('PolygonApiService', () => {
         json: async () => mockResponse,
       } as Response);
 
-      const result = await apiService.getAllTickers();
+      const result = await apiService.searchTickers('AAPL');
 
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchObject({
@@ -82,6 +82,11 @@ describe('PolygonApiService', () => {
       });
     });
 
+    it('should return empty array for queries less than 3 characters', async () => {
+      const result = await apiService.searchTickers('AA');
+      expect(result).toEqual([]);
+    });
+
     it('should handle API errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -90,7 +95,7 @@ describe('PolygonApiService', () => {
         json: async () => ({ error: 'Rate limit exceeded' }),
       } as Response);
 
-      await expect(apiService.getAllTickers()).rejects.toMatchObject({
+      await expect(apiService.searchTickers('AAPL')).rejects.toMatchObject({
         type: 'API_RATE_LIMIT',
       });
     });

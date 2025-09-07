@@ -26,16 +26,22 @@ export class PolygonApiService {
   }
 
   /**
-   * Fetches comprehensive ticker list with bundle-optimized approach
-   * CRITICAL: Single API call on app load, then client-side search to minimize API usage
+   * Searches for tickers using server-side search with minimum 3 characters
+   * OPTIMIZATION: Only fetch tickers when user types 3+ characters to avoid loading thousands of tickers
    */
-  async getAllTickers(): Promise<USStock[]> {
+  async searchTickers(query: string): Promise<USStock[]> {
+    // Only search if query has 3+ characters
+    if (!query || query.length < 3) {
+      return [];
+    }
+
     try {
       const url = this.buildUrl('/v3/reference/tickers', {
+        search: query.trim(),
         type: 'CS',
         market: 'stocks',
         active: 'true',
-        limit: '1000',
+        limit: '50', // Reduced limit since we're searching, not loading all
         sort: 'ticker',
       });
 
@@ -48,10 +54,7 @@ export class PolygonApiService {
       const data: PolygonTickersResponse = await response.json();
 
       if (!data.results) {
-        throw this.createAppError(
-          ErrorType.NO_DATA_AVAILABLE,
-          'No ticker data received from API'
-        );
+        return []; // Return empty array if no results
       }
 
       // Filter for US common stocks only
@@ -80,7 +83,7 @@ export class PolygonApiService {
 
       throw this.createAppError(
         ErrorType.API_ERROR,
-        `Failed to fetch ticker list: ${(error as Error).message}`,
+        `Failed to search tickers: ${(error as Error).message}`,
         error
       );
     }

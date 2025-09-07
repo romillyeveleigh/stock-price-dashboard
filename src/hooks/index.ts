@@ -4,8 +4,7 @@
 
 // Stock data hooks
 export {
-  useAllTickers,
-  useStockSearch,
+  useTickerSearch,
   useStockPrices,
   useMultipleStockPrices,
   usePopularStocks,
