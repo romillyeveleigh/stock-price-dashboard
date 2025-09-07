@@ -170,7 +170,7 @@ export function StockChart({
               fontSize: '11px',
             },
             formatter: function () {
-              return '$' + Highcharts.numberFormat(this.value as number, 2);
+              return '$' + Highcharts.numberFormat(this.value as number, 0);
             },
           },
           crosshair: true,

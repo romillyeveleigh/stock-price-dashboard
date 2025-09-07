@@ -3,6 +3,7 @@
  * Handles mobile bottom drawer layouts
  */
 
+import { Label } from '@radix-ui/react-label';
 import { useState, useEffect } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +13,6 @@ import { PriceTypeToggle } from './PriceTypeToggle';
 import { SelectedStocks } from './SelectedStocks';
 import { StockChart } from './StockChart';
 import { StockSearch } from './StockSearch';
-import { Label } from '@radix-ui/react-label';
 
 interface LayoutProps {
   children?: React.ReactNode;
