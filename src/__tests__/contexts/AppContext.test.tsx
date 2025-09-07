@@ -27,12 +27,23 @@ function TestComponent() {
         onClick={() =>
           addStock({ symbol: 'MSFT', name: 'Microsoft Corporation' })
         }
-        data-testid='add-stock'
+        data-testid='add-msft'
       >
         Add MSFT
       </button>
 
-      <button onClick={() => removeStock('AAPL')} data-testid='remove-stock'>
+      <button
+        onClick={() => addStock({ symbol: 'AAPL', name: 'Apple Inc.' })}
+        data-testid='add-aapl'
+      >
+        Add AAPL
+      </button>
+
+      <button onClick={() => removeStock('MSFT')} data-testid='remove-msft'>
+        Remove MSFT
+      </button>
+
+      <button onClick={() => removeStock('AAPL')} data-testid='remove-aapl'>
         Remove AAPL
       </button>
 
@@ -57,15 +68,15 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('AppContext', () => {
-  it('should provide initial state with default stock', () => {
+  it('should provide initial state with empty stock selection', () => {
     render(
       <TestWrapper>
         <TestComponent />
       </TestWrapper>
     );
 
-    expect(screen.getByTestId('selected-stocks').textContent).toContain('AAPL');
-    expect(screen.getByTestId('stock-count').textContent).toBe('1');
+    expect(screen.getByTestId('selected-stocks').textContent).toBe('');
+    expect(screen.getByTestId('stock-count').textContent).toBe('0');
     expect(screen.getByTestId('price-type').textContent).toBe('close');
     expect(screen.getByTestId('error').textContent).toBe('no-error');
   });
@@ -78,12 +89,11 @@ describe('AppContext', () => {
     );
 
     act(() => {
-      screen.getByTestId('add-stock').click();
+      screen.getByTestId('add-msft').click();
     });
 
-    expect(screen.getByTestId('selected-stocks').textContent).toContain('AAPL');
     expect(screen.getByTestId('selected-stocks').textContent).toContain('MSFT');
-    expect(screen.getByTestId('stock-count').textContent).toBe('2');
+    expect(screen.getByTestId('stock-count').textContent).toBe('1');
   });
 
   it('should remove stocks correctly', () => {
@@ -93,12 +103,21 @@ describe('AppContext', () => {
       </TestWrapper>
     );
 
+    // First add a stock to remove
     act(() => {
-      screen.getByTestId('remove-stock').click();
+      screen.getByTestId('add-msft').click(); // Add MSFT
+    });
+
+    expect(screen.getByTestId('stock-count').textContent).toBe('1');
+    expect(screen.getByTestId('selected-stocks').textContent).toContain('MSFT');
+
+    // Now remove it
+    act(() => {
+      screen.getByTestId('remove-msft').click();
     });
 
     expect(screen.getByTestId('selected-stocks').textContent).not.toContain(
-      'AAPL'
+      'MSFT'
     );
     expect(screen.getByTestId('stock-count').textContent).toBe('0');
   });
@@ -110,17 +129,19 @@ describe('AppContext', () => {
       </TestWrapper>
     );
 
-    // Try to add AAPL again (it's already in initial state)
+    // Add MSFT first
     act(() => {
-      screen.getByTestId('add-stock').click(); // This adds MSFT
+      screen.getByTestId('add-msft').click();
     });
+
+    expect(screen.getByTestId('stock-count').textContent).toBe('1');
 
     // Now try to add MSFT again
     act(() => {
-      screen.getByTestId('add-stock').click();
+      screen.getByTestId('add-msft').click();
     });
 
-    expect(screen.getByTestId('stock-count').textContent).toBe('2'); // Should still be 2
+    expect(screen.getByTestId('stock-count').textContent).toBe('1'); // Should still be 1
     expect(screen.getByTestId('error').textContent).toBe(
       'MSFT is already selected'
     );
@@ -149,11 +170,11 @@ describe('AppContext', () => {
 
     // Make some changes first
     act(() => {
-      screen.getByTestId('add-stock').click();
+      screen.getByTestId('add-msft').click();
       screen.getByTestId('set-price-type').click();
     });
 
-    expect(screen.getByTestId('stock-count').textContent).toBe('2');
+    expect(screen.getByTestId('stock-count').textContent).toBe('1');
     expect(screen.getByTestId('price-type').textContent).toBe('high');
 
     // Reset state
@@ -161,8 +182,8 @@ describe('AppContext', () => {
       screen.getByTestId('reset-state').click();
     });
 
-    expect(screen.getByTestId('stock-count').textContent).toBe('1'); // Back to default AAPL
+    expect(screen.getByTestId('stock-count').textContent).toBe('0'); // Back to empty
     expect(screen.getByTestId('price-type').textContent).toBe('close');
-    expect(screen.getByTestId('selected-stocks').textContent).toContain('AAPL');
+    expect(screen.getByTestId('selected-stocks').textContent).toBe('');
   });
 });
