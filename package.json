@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -15,7 +16,12 @@
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "build:analyze": "vite build --mode analyze",
+    "size-report": "npm run build && du -sh dist/* | sort -hr",
+    "size-check": "node scripts/bundle-size-check.js",
+    "build:check": "npm run build && npm run size-check"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
