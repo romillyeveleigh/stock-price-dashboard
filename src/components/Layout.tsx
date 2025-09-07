@@ -44,10 +44,10 @@ export function Layout({ children }: LayoutProps) {
           <div className='flex items-center gap-4'>
             <div>
               <h1 className='text-lg font-semibold text-foreground md:text-xl'>
-                Stock Price Comparison (US Stocks)
+                Stock Price Comparison (US Stock Exchange)
               </h1>
               <p className='text-sm text-muted-foreground'>
-                Schroders stock analysis tool
+                Fund manager stock analysis tool
               </p>
             </div>
           </div>
@@ -68,6 +68,18 @@ export function Layout({ children }: LayoutProps) {
             </CardContent>
           </Card>
         </div>
+
+        {/* Footer */}
+        <footer className='border-t bg-card px-4 py-3 md:px-6 flex-shrink-0'>
+          <div className='flex flex-col items-center justify-center space-y-1 text-center'>
+            <p className='text-xs text-muted-foreground'>
+              © 2025 Romilly Eveleigh Stock Price Dashboard
+            </p>
+            <p className='text-xs text-muted-foreground'>
+              Data provided by Polygon.io • For educational purposes only
+            </p>
+          </div>
+        </footer>
       </div>
     </div>
   );

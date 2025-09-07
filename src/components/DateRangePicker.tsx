@@ -83,6 +83,7 @@ export function DateRangePicker({
 
   return (
     <div className={`space-y-3 ${className}`}>
+      <Label htmlFor='date-range' className='text-sm font-medium'>Date Range</Label>
       {/* First Line: Date Range Inputs with inline labels - responsive */}
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
         {/* From Date */}
@@ -91,7 +92,7 @@ export function DateRangePicker({
             htmlFor='from-date'
             className='text-sm font-medium whitespace-nowrap'
           >
-            From Date
+            From
           </Label>
           <Input
             id='from-date'
@@ -111,7 +112,7 @@ export function DateRangePicker({
             htmlFor='to-date'
             className='text-sm font-medium whitespace-nowrap'
           >
-            To Date
+            To
           </Label>
           <Input
             id='to-date'
@@ -124,10 +125,7 @@ export function DateRangePicker({
             aria-describedby='date-range-help'
           />
         </div>
-      </div>
-
-      {/* Second Line: Quick Preset Buttons */}
-      <div className='flex flex-wrap gap-2'>
+        <div className='flex flex-wrap gap-2 min-w-[300px]'>
         {datePresets.map(preset => (
           <Button
             key={preset.value}
@@ -142,6 +140,10 @@ export function DateRangePicker({
           </Button>
         ))}
       </div>
+      </div>
+
+      {/* Second Line: Quick Preset Buttons */}
+      
 
       {/* Validation Error */}
       {validationError && (
