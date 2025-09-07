@@ -12,7 +12,7 @@ const getEnvVar = (key: string, defaultValue: string | boolean = '') => {
     return process.env[key] || defaultValue;
   }
 
-  // In browser environment, use import.meta.env
+  // In browser environment, use Vite's environme
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     return import.meta.env[key] || defaultValue;
   }

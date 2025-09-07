@@ -69,6 +69,36 @@ HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
   clip: jest.fn(),
 });
 
+// Mock CSS.supports for Highcharts compatibility
+Object.defineProperty(global, 'CSS', {
+  value: {
+    supports: jest.fn().mockReturnValue(true),
+  },
+  writable: true,
+});
+
+// Mock Highcharts to prevent CSS.supports issues
+jest.mock('highcharts/highstock', () => ({
+  __esModule: true,
+  default: {
+    chart: jest.fn().mockReturnValue({
+      destroy: jest.fn(),
+      update: jest.fn(),
+      reflow: jest.fn(),
+    }),
+    stockChart: jest.fn().mockReturnValue({
+      destroy: jest.fn(),
+      update: jest.fn(),
+      reflow: jest.fn(),
+    }),
+  },
+}));
+
+jest.mock('highcharts-react-official', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => null),
+}));
+
 // Suppress console errors during tests unless explicitly needed
 const originalError = console.error;
 beforeAll(() => {

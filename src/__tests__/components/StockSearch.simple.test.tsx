@@ -116,11 +116,11 @@ describe('StockSearch', () => {
   });
 
   it('shows loading state when tickers are loading', () => {
-    mockUseAllTickers.mockReturnValue({
+    mockUseTickerSearch.mockReturnValue({
       data: [],
       isLoading: true,
       error: null,
-    } as unknown as ReturnType<typeof hooks.useAllTickers>);
+    } as unknown as ReturnType<typeof hooks.useTickerSearch>);
 
     render(
       <TestWrapper>
@@ -134,11 +134,11 @@ describe('StockSearch', () => {
   });
 
   it('handles error state', () => {
-    mockUseAllTickers.mockReturnValue({
+    mockUseTickerSearch.mockReturnValue({
       data: [],
       isLoading: false,
       error: new Error('Failed to load'),
-    } as unknown as ReturnType<typeof hooks.useAllTickers>);
+    } as unknown as ReturnType<typeof hooks.useTickerSearch>);
 
     render(
       <TestWrapper>
