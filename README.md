@@ -16,7 +16,7 @@ Professional financial dashboard for visualizing historical stock price data fro
 
 ```bash
 # Clone and install
-git clone <repository-url>
+git clone https://github.com/romillyeveleigh/stock-price-dashboard.git
 cd stock-price-dashboard
 npm install
 
