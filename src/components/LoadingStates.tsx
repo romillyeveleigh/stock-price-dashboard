@@ -6,6 +6,7 @@
 import { Loader2, TrendingUp } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { useResponsive } from '@/hooks';
 
 interface LoadingStateProps {
   className?: string;
@@ -34,15 +35,13 @@ export function LoadingSpinner({
 // Chart skeleton loading state
 export function ChartLoadingSkeleton({
   className = '',
-  height = 400,
+  height,
 }: ChartLoadingProps) {
+  const { isMobile, isTablet } = useResponsive();
+  const chartHeight = height || isMobile ? 400 : isTablet ? 500 : 600;
   return (
-    <div className={`space-y-4 p-6 ${className}`} style={{ height }}>
-      {/* Chart title skeleton */}
-      <div className='space-y-2'>
-        <Skeleton className='h-6 w-48' />
-        <Skeleton className='h-4 w-32' />
-      </div>
+    <div className={`space-y-4 p-6 ${className}`} style={{ height: chartHeight }}>
+      
 
       {/* Chart area skeleton */}
       <div className='relative flex-1 space-y-4'>

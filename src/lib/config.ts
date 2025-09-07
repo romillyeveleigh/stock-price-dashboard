@@ -61,7 +61,11 @@ export const APP_CONFIG = {
   MAX_DATE_RANGE_YEARS: 5,
 
   // Chart configuration
-  DEFAULT_CHART_HEIGHT: 600,
+  DEFAULT_CHART_HEIGHT: {
+    mobile: 400,
+    tablet: 500,
+    desktop: 600,
+  },
   CHART_COLORS: [
     '#3b82f6', // Professional blue
     '#10b981', // Professional green

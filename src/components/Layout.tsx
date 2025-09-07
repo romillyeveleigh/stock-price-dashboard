@@ -40,44 +40,50 @@ export function Layout({ children }: LayoutProps) {
       {/* Main Content Area */}
       <div className='flex flex-1 flex-col overflow-y-auto'>
         {/* Header */}
-        <header className='flex items-center justify-between border-b bg-card px-4 py-3 md:px-6 flex-shrink-0'>
-          <div className='flex items-center gap-4'>
-            <div>
-              <h1 className='text-lg font-semibold text-foreground md:text-xl'>
-                Stock Price Comparison (US Stock Exchange)
-              </h1>
-              <p className='text-sm text-muted-foreground'>
-                Fund manager stock analysis tool
-              </p>
+        <header className='flex items-center justify-between border-b bg-card px-4 py-3 md:px-6 lg:px-8 flex-shrink-0'>
+          <div className='w-full max-w-7xl mx-auto'>
+            <div className='flex items-center gap-4'>
+              <div>
+                <h1 className='text-2xl font-semibold text-foreground md:text-3xl'>
+                  Stock Price Comparison (US Stock Exchange)
+                </h1>
+                <p className='text-sm text-muted-foreground'>
+                  Fund manager stock analysis tool
+                </p>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Search Stocks Section - Above Chart */}
-        <div className='bg-card px-4 py-4 md:px-6 flex-shrink-0'>
-          <Card >
-            <CardContent className='space-y-4 mt-6'>
-              <div className='mt-4'>
-                <Label htmlFor='stock-search' className='text-sm font-medium'>Select Stocks</Label>
-                <StockSearch />
-              </div>
-              <SelectedStocks />
-              <DateRangePicker />
-              <PriceTypeToggle />
-              <StockChart className='h-full w-full' />
-            </CardContent>
-          </Card>
-        </div>
+        <main className='bg-card px-4 py-4 md:px-6 lg:px-8 flex-shrink-0'>
+          <div className='w-full max-w-7xl mx-auto'>
+            <Card>
+              <CardContent className='space-y-4 mt-6'>
+                <div className='mt-4'>
+                  <Label htmlFor='stock-search' className='text-sm font-medium'>Select Stocks</Label>
+                  <StockSearch />
+                </div>
+                <SelectedStocks />
+                <DateRangePicker />
+                <PriceTypeToggle />
+                <StockChart className='h-full w-full' />
+              </CardContent>
+            </Card>
+          </div>
+        </main>
 
         {/* Footer */}
-        <footer className='border-t bg-card px-4 py-3 md:px-6 flex-shrink-0'>
-          <div className='flex flex-col items-center justify-center space-y-1 text-center'>
-            <p className='text-xs text-muted-foreground'>
-              © 2025 Romilly Eveleigh Stock Price Dashboard
-            </p>
-            <p className='text-xs text-muted-foreground'>
-              Data provided by Polygon.io • For educational purposes only
-            </p>
+        <footer className='border-t bg-card px-4 py-3 md:px-6 lg:px-8 flex-shrink-0'>
+          <div className='w-full max-w-7xl mx-auto'>
+            <div className='flex flex-col items-center justify-center space-y-1 text-center'>
+              <p className='text-xs text-muted-foreground'>
+                © 2025 Romilly Eveleigh Stock Price Dashboard
+              </p>
+              <p className='text-xs text-muted-foreground'>
+                Data provided by Polygon.io • For educational purposes only
+              </p>
+            </div>
           </div>
         </footer>
       </div>

@@ -11,7 +11,7 @@ import { ChartEmptyState, NoDataAvailable } from '@/components/EmptyStates';
 import { ChartError } from '@/components/ErrorStates';
 import { ChartLoadingSkeleton } from '@/components/LoadingStates';
 import { useAppContext } from '@/contexts/AppContext';
-import { useMultipleStockPrices } from '@/hooks';
+import { useMultipleStockPrices, useResponsive } from '@/hooks';
 import { APP_CONFIG } from '@/lib';
 import type { StockPriceData } from '@/types';
 
@@ -20,12 +20,10 @@ interface StockChartProps {
   height?: number;
 }
 
-export function StockChart({
-  className = '',
-  height = APP_CONFIG.DEFAULT_CHART_HEIGHT,
-}: StockChartProps) {
+export function StockChart({ className = '', height }: StockChartProps) {
   const { state } = useAppContext();
   const chartRef = useRef<HighchartsReact.RefObject>(null);
+  const { isMobile, isTablet } = useResponsive();
 
   // Get stock symbols for API calls
   const stockSymbols = state.selectedStocks.map(stock => stock.symbol);
@@ -117,7 +115,12 @@ export function StockChart({
     return {
       chart: {
         type: 'line',
-        height,
+        height:
+          height || isMobile
+            ? APP_CONFIG.DEFAULT_CHART_HEIGHT.mobile
+            : isTablet
+              ? APP_CONFIG.DEFAULT_CHART_HEIGHT.tablet
+              : APP_CONFIG.DEFAULT_CHART_HEIGHT.desktop,
         backgroundColor: '#fafafa',
         style: {
           fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
@@ -162,7 +165,6 @@ export function StockChart({
             margin: 20, // Add space between y-axis and title
           },
           opposite: true,
-          // lineWidth: 1,
           gridLineColor: '#e5e7eb',
           labels: {
             style: {
@@ -270,7 +272,7 @@ export function StockChart({
         enabled: false,
       },
     };
-  }, [stockPricesData, state.priceType, height]);
+  }, [stockPricesData, state.priceType, height, isMobile, isTablet]);
 
   // Handle chart cleanup
   useEffect(() => {

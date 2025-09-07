@@ -6,8 +6,7 @@
 import { useQuery, useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { APP_CONFIG } from '@/lib';
-import type { DateRange, StockPriceData, USStock } from '@/types';
+import type { DateRange, StockPriceData } from '@/types';
 
 import { PolygonApiService } from '../services/polygonApi';
 
