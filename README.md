@@ -50,8 +50,9 @@ npm run dev
 ```bash
 npm run dev          # Development server
 npm run build        # Production build
-npm run test         # Run tests
-npm run test:a11y    # Accessibility tests
+npm run test         # Run unit tests
+npm run test:e2e     # Run E2E tests with Playwright
+npm run test:e2e:ui  # Run E2E tests with UI mode
 npm run lint         # Lint code
 npm run format       # Format code
 ```
