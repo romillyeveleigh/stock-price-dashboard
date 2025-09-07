@@ -26,12 +26,9 @@ export { DateRangePicker } from './DateRangePicker';
 export { PriceTypeToggle } from './PriceTypeToggle';
 export { SelectedStocks } from './SelectedStocks';
 export { StockChart } from './StockChart';
-export { UrlControls } from './UrlControls';
 
 // Layout Components
 export { Layout } from './Layout';
-export { Sidebar } from './Sidebar';
-export { SettingsPanel } from './SettingsPanel';
 
 // State Components
 export * from './LoadingStates';

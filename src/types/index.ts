@@ -36,19 +36,10 @@ export type {
   LoadingState,
   AppState,
   AppAction,
-  StockSearchProps,
-  DateRangePickerProps,
-  PriceTypeToggleProps,
-  SelectedStocksProps,
-  StockChartProps,
-  SidebarProps,
-  HeaderProps,
   Theme,
   ThemeConfig,
   Breakpoint,
   ResponsiveConfig,
-  ValidationError,
-  FormState,
 } from './ui';
 
 // Chart-related types

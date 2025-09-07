@@ -14,27 +14,7 @@ import { SelectedStocks } from './SelectedStocks';
 import { StockChart } from './StockChart';
 import { StockSearch } from './StockSearch';
 
-interface LayoutProps {
-  children?: React.ReactNode;
-}
-
-export function Layout({ children }: LayoutProps) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
-
-  // Handle responsive breakpoints
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 768);
-      setIsTablet(width >= 768 && width < 1024);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
+export function Layout() {
   return (
     <div className='flex h-screen bg-background'>
       {/* Main Content Area */}
@@ -61,7 +41,9 @@ export function Layout({ children }: LayoutProps) {
             <Card>
               <CardContent className='space-y-4 mt-6'>
                 <div className='mt-4'>
-                  <Label htmlFor='stock-search' className='text-sm font-medium'>Select Stocks</Label>
+                  <Label htmlFor='stock-search' className='text-sm font-medium'>
+                    Select Stocks
+                  </Label>
                   <StockSearch />
                 </div>
                 <SelectedStocks />
