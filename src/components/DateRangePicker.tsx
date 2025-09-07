@@ -3,8 +3,8 @@
  * Provides date input controls with quick preset buttons and accessibility features
  */
 
-import { format, subYears } from 'date-fns';
-import { Calendar, AlertCircle } from 'lucide-react';
+import { format } from 'date-fns';
+import { AlertCircle } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -81,55 +81,48 @@ export function DateRangePicker({
   // Get today's date for max attribute
   const today = format(new Date(), 'yyyy-MM-dd');
 
-  // Polygon API max date range is 2 years from today for free tier
-  const MAX_DATE_RANGE_YEARS = 2;
-  const min = format(subYears(new Date(), MAX_DATE_RANGE_YEARS), 'yyyy-MM-dd');
-
   return (
     <div className={`space-y-3 ${className}`}>
       {/* First Line: Date Range Inputs with inline labels - responsive */}
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center mt-6'>
         {/* From Date */}
         <div className='flex items-center gap-2'>
-          <Label htmlFor='from-date' className='text-sm font-medium whitespace-nowrap'>
+          <Label
+            htmlFor='from-date'
+            className='text-sm font-medium whitespace-nowrap'
+          >
             From Date
           </Label>
-          <div className='relative'>
-            <Calendar className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-            <Input
-              id='from-date'
-              type='date'
-              value={fromInput}
-              onChange={handleFromDateChange}
-              max={today}
-              min={min}
-              disabled={disabled}
-              className='pl-10'
-              aria-label='Select start date'
-              aria-describedby='date-range-help'
-            />
-          </div>
+          <Input
+            id='from-date'
+            type='date'
+            value={fromInput}
+            onChange={handleFromDateChange}
+            max={today}
+            disabled={disabled}
+            aria-label='Select start date'
+            aria-describedby='date-range-help'
+          />
         </div>
 
         {/* To Date */}
         <div className='flex items-center gap-2'>
-          <Label htmlFor='to-date' className='text-sm font-medium whitespace-nowrap'>
+          <Label
+            htmlFor='to-date'
+            className='text-sm font-medium whitespace-nowrap'
+          >
             To Date
           </Label>
-          <div className='relative'>
-            <Calendar className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-            <Input
-              id='to-date'
-              type='date'
-              value={toInput}
-              onChange={handleToDateChange}
-              max={today}
-              disabled={disabled}
-              className='pl-10'
-              aria-label='Select end date'
-              aria-describedby='date-range-help'
-            />
-          </div>
+          <Input
+            id='to-date'
+            type='date'
+            value={toInput}
+            onChange={handleToDateChange}
+            max={today}
+            disabled={disabled}
+            aria-label='Select end date'
+            aria-describedby='date-range-help'
+          />
         </div>
       </div>
 

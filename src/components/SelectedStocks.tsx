@@ -3,12 +3,13 @@
  * Shows company name, ticker symbol, and provides remove buttons with responsive layout
  */
 
-import { X,} from 'lucide-react';
+import { X } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useStockSelection } from '@/hooks';
+import { APP_CONFIG } from '@/lib';
 // import { APP_CONFIG } from '@/lib'; // Used in component logic
 // import type { Stock } from '@/types'; // Used for type definitions
 
@@ -38,10 +39,21 @@ export function SelectedStocks({
     }
   };
 
+  const getColor = (index: number) => {
+    const baseColor =
+      APP_CONFIG.CHART_COLORS[index % APP_CONFIG.CHART_COLORS.length];
+    return `${baseColor}50`; // Adding 80 for 50% opacity in hex
+  };
+
   return (
     <div className={`flex flex-wrap gap-1 ${className} min-h-[22px]`}>
-      {selectedStocks.map(stock => (
-        <Badge key={stock.symbol} variant='secondary' className='text-xs'>
+      {selectedStocks.map((stock, index) => (
+        <Badge
+          key={stock.symbol}
+          variant='secondary'
+          className='text-xs'
+          style={{ backgroundColor: getColor(index) }}
+        >
           {stock.symbol} {stock.name && `- ${stock.name}`}
           {showRemoveButtons && (
             <Button

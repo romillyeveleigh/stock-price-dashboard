@@ -59,14 +59,45 @@ export function StockChart({
         point[state.priceType], // Use selected price type (open, high, low, close)
       ]);
 
-     
+      const baseColor =
+        APP_CONFIG.CHART_COLORS[index % APP_CONFIG.CHART_COLORS.length];
 
-      // Add price series
+      // Convert hex color to RGB for gradient
+      const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result
+          ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16),
+            }
+          : null;
+      };
+
+      const rgb = hexToRgb(baseColor);
+      if (!rgb) return;
+
+      // Create zones with gradient fills
+      const zones = [
+        {
+          color: baseColor,
+          fillColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            stops: [
+              [0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`],
+              [1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`],
+            ],
+          },
+        },
+      ] as Highcharts.SeriesZonesOptionsObject[];
+
+      // Add area series with gradient fill
       series.push({
-        type: 'line',
+        color: baseColor,
+        type: 'area',
         name: stockData.symbol,
         data: priceData,
-        color: APP_CONFIG.CHART_COLORS[index % APP_CONFIG.CHART_COLORS.length],
+        zones: zones,
         yAxis: 0,
         showInLegend: true,
         marker: {
@@ -77,10 +108,10 @@ export function StockChart({
               radius: 5,
             },
           },
-
         },
-      } as Highcharts.SeriesLineOptions);
-
+        lineWidth: 1,
+        fillOpacity: 0.1,
+      } as Highcharts.SeriesAreaOptions);
     });
 
     return {
@@ -100,7 +131,6 @@ export function StockChart({
       },
       title: {
         text: '',
-        
       },
       xAxis: {
         type: 'datetime',
@@ -121,7 +151,6 @@ export function StockChart({
         crosshair: true,
       },
       yAxis: [
-        
         {
           // Price axis
           title: {
@@ -157,15 +186,17 @@ export function StockChart({
           const date = new Date(this.x as number);
           const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
           const day = date.getDate();
-          const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+          const monthName = date.toLocaleDateString('en-US', {
+            month: 'short',
+          });
           const year = date.getFullYear();
           const formattedDate = `${dayName} ${day} ${monthName} ${year}`;
-          
+
           let tooltip = `<b>${formattedDate}</b><br/>`;
 
           this.points?.forEach(point => {
             if (point.series.name.includes('Volume')) {
-              tooltip += `<span style="color:${point.color}">${point.series.name}</span>: ${Highcharts.numberFormat((point.y as number) / 1000000, 1)}M<br/>`;
+              tooltip += `<span style="color:${point.color}" >${point.series.name}</span>: ${Highcharts.numberFormat((point.y as number) / 1000000, 1)}M<br/>`;
             } else {
               tooltip += `<span style="color:${point.color}">${point.series.name}</span>: $${(point.y as number).toFixed(2)}<br/>`;
             }
@@ -175,10 +206,10 @@ export function StockChart({
         },
       },
       legend: {
-        enabled: false,
-        align: 'left',
-        verticalAlign: 'top',
-        layout: 'vertical',
+        enabled: true,
+        align: 'center',
+        verticalAlign: 'bottom',
+        layout: 'horizontal',
         backgroundColor: '#ffffff',
         borderColor: '#e5e7eb',
         borderWidth: 1,
@@ -314,7 +345,7 @@ export function StockChart({
   return (
     <div className={className}>
       <HighchartsReact
-      key={`chart-${state.dateRange.from.toISOString()}-${state.dateRange.to.toISOString()}`}
+        key={`chart-${state.dateRange.from.toISOString()}-${state.dateRange.to.toISOString()}`}
         ref={chartRef}
         highcharts={Highcharts}
         options={chartOptions}
@@ -322,4 +353,3 @@ export function StockChart({
     </div>
   );
 }
-
