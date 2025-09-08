@@ -82,16 +82,6 @@ export function PriceTypeToggle({
 
   return (
     <div className={`${className}`}>
-      {/* Label */}
-      <div className='mb-2'>
-        <label
-          htmlFor='price-type'
-          className='text-sm font-medium text-foreground'
-        >
-          Price Type
-        </label>
-      </div>
-
       {/* Radio Button Group */}
       <div
         role='radiogroup'
@@ -124,7 +114,9 @@ export function PriceTypeToggle({
               tabIndex={getTabIndex(index)}
             >
               {/* Label */}
-              <span className='text-xs font-medium'>{option.label.toUpperCase()}</span>
+              <span className='text-xs font-medium'>
+                {option.label.toUpperCase()}
+              </span>
             </div>
           );
         })}

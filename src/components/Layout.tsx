@@ -39,15 +39,27 @@ export function Layout() {
           <div className='w-full max-w-6xl mx-auto'>
             <Card>
               <CardContent className='space-y-4 mt-4'>
-                <div className='mt-0'>
+                <div>
                   <Label htmlFor='stock-search' className='text-sm font-medium'>
                     Select Stocks
                   </Label>
-                  <StockSearch />
+                  <StockSearch className='mt-2' />
+                  <SelectedStocks className='mt-3' />
                 </div>
-                <SelectedStocks />
-                <DateRangePicker />
-                <PriceTypeToggle />
+
+                <div>
+                  <Label htmlFor='date-range' className='text-sm font-medium'>
+                    Date Range
+                  </Label>
+                  <DateRangePicker className='mt-2' />
+                </div>
+
+                <div>
+                  <Label htmlFor='price-type' className='text-sm font-medium'>
+                    Price Type
+                  </Label>
+                  <PriceTypeToggle className='mt-2' />
+                </div>
                 <StockChart className='h-full w-full' />
               </CardContent>
             </Card>

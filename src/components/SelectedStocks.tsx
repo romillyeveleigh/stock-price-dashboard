@@ -45,6 +45,10 @@ export function SelectedStocks({
     return `${baseColor}50`; // Adding 80 for 50% opacity in hex
   };
 
+  if (selectedStocks.length === 0) {
+    return null;
+  }
+
   return (
     <div className={`flex flex-wrap gap-1 ${className}`}>
       {selectedStocks.map((stock, index) => (
