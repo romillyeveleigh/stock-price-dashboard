@@ -5,7 +5,6 @@
 - [ ] API key configured in environment variables
 - [ ] Build passes: `npm run build`
 - [ ] Tests pass: `npm run test`
-- [ ] Accessibility tests pass: `npm run test:a11y`
 - [ ] Bundle size verified: `npm run build && ls -lh dist/`
 
 ## Environment Variables
