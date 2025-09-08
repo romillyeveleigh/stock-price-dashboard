@@ -36,7 +36,12 @@ describe('PriceTypeToggle', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText('Price Type')).toBeTruthy();
+    // Check that the radiogroup exists with proper aria-label instead of visible text
+    const radioGroup = screen.getByRole('radiogroup');
+    expect(radioGroup.getAttribute('aria-label')).toBe(
+      'Select price type for chart display'
+    );
+
     expect(screen.getAllByText('OPEN')).toHaveLength(1);
     expect(screen.getAllByText('HIGH')).toHaveLength(1);
     expect(screen.getAllByText('LOW')).toHaveLength(1);

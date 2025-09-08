@@ -32,26 +32,28 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 // Helper component that adds a stock and renders SelectedStocks
 function SelectedStocksWithStock() {
   const { addStock } = useAppContext();
+  const hasAddedStock = React.useRef(false);
 
   React.useEffect(() => {
-    addStock({ symbol: 'AAPL', name: 'Apple Inc.' });
-  }, []);
+    if (!hasAddedStock.current) {
+      addStock({ symbol: 'AAPL', name: 'Apple Inc.' });
+      hasAddedStock.current = true;
+    }
+  });
 
   return <SelectedStocks />;
 }
 
 describe('SelectedStocks', () => {
   it('renders empty when no stocks are selected', () => {
-    render(
+    const { container } = render(
       <TestWrapper>
         <SelectedStocks />
       </TestWrapper>
     );
 
-    // Should render a div with no children when empty
-    const container = document.querySelector('.flex.flex-wrap.gap-1');
-    expect(container).toBeTruthy();
-    expect(container?.children).toHaveLength(0);
+    // Component returns null when no stocks are selected
+    expect(container.firstChild).toBeNull();
   });
 
   it('displays selected stocks with company names', () => {
@@ -68,10 +70,14 @@ describe('SelectedStocks', () => {
   it('can hide remove buttons', () => {
     function SelectedStocksWithStockNoButtons() {
       const { addStock } = useAppContext();
+      const hasAddedStock = React.useRef(false);
 
       React.useEffect(() => {
-        addStock({ symbol: 'AAPL', name: 'Apple Inc.' });
-      }, []);
+        if (!hasAddedStock.current) {
+          addStock({ symbol: 'AAPL', name: 'Apple Inc.' });
+          hasAddedStock.current = true;
+        }
+      });
 
       return <SelectedStocks showRemoveButtons={false} />;
     }
@@ -103,13 +109,27 @@ describe('SelectedStocks', () => {
   });
 
   it('applies custom className', () => {
+    function SelectedStocksWithStockAndClass() {
+      const { addStock } = useAppContext();
+      const hasAddedStock = React.useRef(false);
+
+      React.useEffect(() => {
+        if (!hasAddedStock.current) {
+          addStock({ symbol: 'AAPL', name: 'Apple Inc.' });
+          hasAddedStock.current = true;
+        }
+      });
+
+      return <SelectedStocks className='custom-class' />;
+    }
+
     render(
       <TestWrapper>
-        <SelectedStocks className='custom-class' />
+        <SelectedStocksWithStockAndClass />
       </TestWrapper>
     );
 
-    // Check that custom class is applied
+    // Check that custom class is applied when stocks are present
     const container = document.querySelector('.custom-class');
     expect(container).toBeTruthy();
   });
