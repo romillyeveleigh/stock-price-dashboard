@@ -99,7 +99,6 @@ jest.mock('@/constants', () => ({
   NODE_ENV: 'test',
   POLYGON_API_KEY: 'test-api-key',
   PROD: false,
-  USER_NODE_ENV: 'test',
 }));
 
 jest.mock('highcharts-react-official', () => ({

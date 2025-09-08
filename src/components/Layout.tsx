@@ -16,9 +16,8 @@ import { StockSearch } from './StockSearch';
 export function Layout() {
   return (
     <div className='flex h-screen bg-background'>
-      {/* Main Content Area */}
+      {/* Content */}
       <div className='flex flex-1 flex-col overflow-y-auto '>
-        {/* Header */}
         <header className='flex items-center justify-between border-b bg-card px-4 py-2 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex-shrink-0'>
           <div className='w-full max-w-6xl mx-auto'>
             <div className='flex items-center gap-4'>
@@ -34,11 +33,12 @@ export function Layout() {
           </div>
         </header>
 
-        {/* Search Stocks Section */}
+        {/* Main */}
         <main className='bg-card px-4 py-2 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex-shrink-0'>
           <div className='w-full max-w-6xl mx-auto'>
             <Card>
               <CardContent className='space-y-4 mt-4'>
+                {/* Stock Selection */}
                 <div>
                   <Label htmlFor='stock-search' className='text-sm font-medium'>
                     Select Stocks
@@ -47,6 +47,7 @@ export function Layout() {
                   <SelectedStocks className='mt-3' />
                 </div>
 
+                {/* Date Range */}
                 <div>
                   <Label htmlFor='date-range' className='text-sm font-medium'>
                     Date Range
@@ -54,19 +55,21 @@ export function Layout() {
                   <DateRangePicker className='mt-2' />
                 </div>
 
+                {/* Price Type */}
                 <div>
                   <Label htmlFor='price-type' className='text-sm font-medium'>
                     Price Type
                   </Label>
                   <PriceTypeToggle className='mt-2' />
                 </div>
+
+                {/* Stock Chart */}
                 <StockChart className='h-full w-full' />
               </CardContent>
             </Card>
           </div>
         </main>
 
-        {/* Footer */}
         <footer className='border-t bg-card px-4 py-2 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex-shrink-0'>
           <div className='w-full max-w-6xl mx-auto'>
             <div className='flex flex-col items-center justify-center space-y-1 text-center'>
