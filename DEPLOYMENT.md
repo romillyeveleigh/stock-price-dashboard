@@ -5,7 +5,10 @@
 - [ ] API key configured in environment variables
 - [ ] Build passes: `npm run build`
 - [ ] Tests pass: `npm run test`
-- [ ] Bundle size verified: `npm run build && ls -lh dist/`
+- [ ] E2E tests pass: `npm run test:e2e`
+- [ ] Code quality checks: `npm run lint` and `npm run format:check`
+- [ ] Type checking: `npm run type-check`
+- [ ] Bundle size verified: `npm run build:check`
 
 ## Environment Variables
 
@@ -113,8 +116,16 @@ VITE_POLYGON_API_KEY=your_polygon_api_key_here
 
 ```bash
 # Analyze bundle size
-npm run build
-npx vite-bundle-analyzer dist/
+npm run analyze
+
+# Check bundle sizes against thresholds
+npm run build:check
+
+# Generate detailed size report
+npm run size-report
+
+# Build with analysis mode
+npm run build:analyze
 ```
 
 ### CDN Configuration
@@ -198,8 +209,15 @@ npm run build
 npm run build
 npm run preview
 
-# Check bundle contents
-npx vite-bundle-analyzer dist/
+# Check bundle contents and sizes
+npm run analyze
+npm run size-check
+
+# Run type checking
+npm run type-check
+
+# Test production build
+npm run test:e2e
 ```
 
 ## Backup and Recovery

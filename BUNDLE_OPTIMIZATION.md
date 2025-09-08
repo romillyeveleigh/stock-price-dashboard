@@ -74,8 +74,14 @@ npm run build:check
 # Just check current build sizes
 npm run size-check
 
-# Analyze bundle composition (requires additional tools)
+# Analyze bundle composition
 npm run analyze
+
+# Generate detailed size report
+npm run size-report
+
+# Build with analysis mode
+npm run build:analyze
 ```
 
 ## Future Optimizations

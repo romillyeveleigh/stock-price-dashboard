@@ -37,7 +37,7 @@ npm run dev
 
 ## Architecture
 
-- **Frontend**: React 18 + TypeScript + Vite
+- **Frontend**: React 19 + TypeScript + Vite
 - **Charts**: Highcharts Stock for time series
 - **State**: React Context + TanStack Query
 - **Styling**: Tailwind CSS + Shadcn/ui
@@ -48,13 +48,35 @@ npm run dev
 ## Scripts
 
 ```bash
+# Development
 npm run dev          # Development server
+npm run preview      # Preview production build
+
+# Building
 npm run build        # Production build
+npm run build:check  # Build and check bundle sizes
+npm run build:analyze # Build with bundle analysis
+
+# Testing
 npm run test         # Run unit tests
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage
 npm run test:e2e     # Run E2E tests with Playwright
 npm run test:e2e:ui  # Run E2E tests with UI mode
+npm run test:e2e:headed # Run E2E tests in headed mode
+npm run test:e2e:debug  # Run E2E tests in debug mode
+
+# Code Quality
 npm run lint         # Lint code
-npm run format       # Format code
+npm run lint:fix     # Lint and fix code
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
+npm run type-check   # TypeScript type checking
+
+# Bundle Analysis
+npm run analyze      # Analyze bundle composition
+npm run size-check   # Check current bundle sizes
+npm run size-report  # Generate size report
 ```
 
 ## Deployment
@@ -94,9 +116,10 @@ export default async function handler(req, res) {
 
 ## Performance
 
-- Bundle size: <500KB (native fetch vs 1.37MB SDK)
+- Bundle size: ~1,177KB total (optimized chunks, native fetch vs 1.37MB SDK)
+- Largest chunk: 372KB (well within 500KB limit per chunk)
 - Caching: 5min stale time prevents redundant API calls
-- Code splitting: Lazy-loaded chart components
+- Code splitting: Intelligent chunk splitting with 7 optimized bundles
 - Rate limiting: Built-in request queuing
 
 ## Browser Support

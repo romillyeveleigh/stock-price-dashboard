@@ -155,6 +155,12 @@ export default async function handler(req, res) {
 **Usage Monitoring**
 
 ```javascript
+// Import from monitoring script
+import {
+  logApiUsage,
+  reportSecurityEvent,
+} from '../scripts/api-usage-monitor.js';
+
 // Add to API service
 const logApiUsage = (endpoint, response) => {
   console.log({
@@ -176,6 +182,14 @@ const reportSecurityEvent = error => {
     console.error('Potential API key issue:', error);
   }
 };
+```
+
+**Monitoring Scripts**
+
+```bash
+# Available monitoring utilities
+node scripts/api-usage-monitor.js    # API usage analysis
+npm run build:check                  # Bundle size monitoring
 ```
 
 ## Content Security Policy
