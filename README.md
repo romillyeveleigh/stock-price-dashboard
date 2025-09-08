@@ -5,7 +5,7 @@ Professional financial dashboard for visualizing historical stock price data fro
 ## Features
 
 - **Stock Search**: Server-side search with 3+ character minimum
-- **Interactive Charts**: Line charts with crosshairs, zoom, and volume display
+- **Interactive Charts**: Line charts with crosshairs, zoom and stock price display
 - **Price Types**: Toggle between Open, High, Low, Close prices
 - **Date Ranges**: Custom ranges with quick presets (1M, 3M, 6M, YTD, 1Y)
 - **URL Sharing**: Bookmark and share chart configurations
