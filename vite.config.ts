@@ -101,6 +101,6 @@ export default defineConfig({
   },
   // Additional performance optimizations
   esbuild: {
-    drop: ['console', 'debugger'],
+    // drop: ['console', 'debugger'],
   },
 });

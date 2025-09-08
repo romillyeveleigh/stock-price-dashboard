@@ -12,9 +12,6 @@
 ```bash
 # Required
 VITE_POLYGON_API_KEY=your_polygon_api_key_here
-
-# Optional
-NODE_ENV=production
 ```
 
 ## Deployment Platforms

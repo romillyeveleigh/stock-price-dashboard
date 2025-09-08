@@ -2,12 +2,12 @@
  * Application configuration
  */
 
-import { DEV, NODE_ENV, POLYGON_API_KEY, PROD } from '@/constants';
+import { DEV, POLYGON_API_KEY, PROD, MODE } from '@/constants';
 import type { ApiClientConfig, RateLimitConfig } from '@/types';
 
 export const ENV = {
   POLYGON_API_KEY: POLYGON_API_KEY,
-  NODE_ENV: NODE_ENV,
+  MODE: MODE,
   DEV: DEV,
   PROD: PROD,
 } as const;
@@ -18,7 +18,9 @@ if (ENV.DEV) {
     POLYGON_API_KEY: ENV.POLYGON_API_KEY
       ? `${ENV.POLYGON_API_KEY.slice(0, 8)}...`
       : 'NOT SET',
-    NODE_ENV: ENV.NODE_ENV,
+    MODE: ENV.MODE,
+    DEV: ENV.DEV,
+    PROD: ENV.PROD,
   });
 }
 
@@ -114,8 +116,8 @@ export const VALIDATION = {
 } as const;
 
 // Development helpers
-export const isDevelopment = ENV.NODE_ENV === 'development';
-export const isProduction = ENV.NODE_ENV === 'production';
+export const isDevelopment = ENV.MODE === 'development';
+export const isProduction = ENV.MODE === 'production';
 
 // Logging configuration
 export const LOGGING = {

@@ -9,6 +9,7 @@ import type { ErrorInfo, ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ENV } from '@/lib';
 
 interface Props {
   children: ReactNode;
@@ -97,7 +98,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
 
               {/* Error details (development only) */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {ENV.MODE === 'development' && this.state.error && (
                 <details className='rounded-lg bg-muted p-4'>
                   <summary className='cursor-pointer text-sm font-medium mb-2 flex items-center gap-2'>
                     <Bug className='h-4 w-4' />
@@ -164,14 +165,6 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return this.props.children;
   }
-}
-
-// Hook version for functional components
-export function useErrorHandler() {
-  return (error: Error, errorInfo?: ErrorInfo) => {
-    console.error('Error caught by error handler:', error, errorInfo);
-    // Could integrate with error reporting service here
-  };
 }
 
 // Higher-order component for wrapping components with error boundary
