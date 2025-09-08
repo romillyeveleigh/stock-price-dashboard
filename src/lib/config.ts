@@ -47,9 +47,9 @@ export const APP_CONFIG = {
 
   // Chart configuration
   DEFAULT_CHART_HEIGHT: {
-    mobile: 320,  
-    tablet: 400,  
-    desktop: 480, 
+    mobile: 320,
+    tablet: 400,
+    desktop: 480,
   },
   CHART_COLORS: [
     '#3b82f6', // Professional blue
@@ -67,10 +67,11 @@ export const APP_CONFIG = {
   SEARCH_MIN_LENGTH: 2,
   CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
 
-  // UI
-  MOBILE_BREAKPOINT: 768,
-  TABLET_BREAKPOINT: 1024,
-  DESKTOP_BREAKPOINT: 1280,
+  // UI - Using standard Tailwind breakpoints
+  MOBILE_BREAKPOINT: 640, // sm: 640px
+  TABLET_BREAKPOINT: 768, // md: 768px
+  DESKTOP_BREAKPOINT: 1024, // lg: 1024px
+  LARGE_DESKTOP_BREAKPOINT: 1280, // xl: 1280px
 } as const;
 
 // Feature flags

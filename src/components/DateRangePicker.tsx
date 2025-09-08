@@ -83,9 +83,11 @@ export function DateRangePicker({
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <Label htmlFor='date-range' className='text-sm font-medium'>Date Range</Label>
+      <Label htmlFor='date-range' className='text-sm font-medium'>
+        Date Range
+      </Label>
       {/* First Line: Date Range Inputs with inline labels - responsive */}
-      <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+      <div className='flex flex-col gap-3 md:flex-row md:items-center'>
         {/* From Date */}
         <div className='flex items-center gap-2'>
           <Label
@@ -125,25 +127,24 @@ export function DateRangePicker({
             aria-describedby='date-range-help'
           />
         </div>
-        <div className='flex flex-wrap gap-2 min-w-[300px]'>
-        {datePresets.map(preset => (
-          <Button
-            key={preset.value}
-            variant={activePreset === preset.value ? 'default' : 'outline'}
-            size='sm'
-            onClick={() => handlePresetClick(preset)}
-            disabled={disabled}
-            className='text-xs px-3 py-1.5'
-            aria-label={`Select ${preset.label} date range`}
-          >
-            {preset.label}
-          </Button>
-        ))}
-      </div>
+        <div className='flex flex-wrap gap-2 w-full md:w-auto'>
+          {datePresets.map(preset => (
+            <Button
+              key={preset.value}
+              variant={activePreset === preset.value ? 'default' : 'outline'}
+              size='sm'
+              onClick={() => handlePresetClick(preset)}
+              disabled={disabled}
+              className='text-xs px-3 py-1.5'
+              aria-label={`Select ${preset.label} date range`}
+            >
+              {preset.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Second Line: Quick Preset Buttons */}
-      
 
       {/* Validation Error */}
       {validationError && (

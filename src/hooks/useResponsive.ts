@@ -18,11 +18,13 @@ export function useResponsive(): ResponsiveConfig {
       const width = window.innerWidth;
 
       if (width < APP_CONFIG.MOBILE_BREAKPOINT) {
-        setBreakpoint('mobile');
+        setBreakpoint('mobile'); // < 640px
       } else if (width < APP_CONFIG.TABLET_BREAKPOINT) {
-        setBreakpoint('tablet');
+        setBreakpoint('tablet'); // 640px - 767px
+      } else if (width < APP_CONFIG.DESKTOP_BREAKPOINT) {
+        setBreakpoint('desktop'); // 768px - 1023px
       } else {
-        setBreakpoint('desktop');
+        setBreakpoint('desktop'); // >= 1024px (large desktop)
       }
     };
 
@@ -81,6 +83,10 @@ export function useIsTablet(): boolean {
 
 export function useIsDesktop(): boolean {
   return useMediaQuery(`(min-width: ${APP_CONFIG.TABLET_BREAKPOINT}px)`);
+}
+
+export function useIsLargeDesktop(): boolean {
+  return useMediaQuery(`(min-width: ${APP_CONFIG.DESKTOP_BREAKPOINT}px)`);
 }
 
 /**

@@ -251,7 +251,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
         rules: [
           {
             condition: {
-              maxWidth: 768,
+              maxWidth: 639, // Mobile breakpoint (< 640px)
             },
             chartOptions: {
               legend: {
@@ -265,6 +265,30 @@ export function StockChart({ className = '', height }: StockChartProps) {
                     fontSize: '8px',
                   },
                 },
+              },
+            },
+          },
+          {
+            condition: {
+              maxWidth: 767, // Tablet breakpoint (640px - 767px)
+            },
+            chartOptions: {
+              legend: {
+                align: 'center',
+                verticalAlign: 'bottom',
+                layout: 'horizontal',
+              },
+            },
+          },
+          {
+            condition: {
+              maxWidth: 1023, // Desktop breakpoint (768px - 1023px)
+            },
+            chartOptions: {
+              legend: {
+                align: 'center',
+                verticalAlign: 'bottom',
+                layout: 'horizontal',
               },
             },
           },

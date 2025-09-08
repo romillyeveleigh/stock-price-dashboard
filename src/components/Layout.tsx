@@ -19,7 +19,7 @@ export function Layout() {
       {/* Main Content Area */}
       <div className='flex flex-1 flex-col overflow-y-auto '>
         {/* Header */}
-        <header className='flex items-center justify-between border-b bg-card px-4 py-2 md:px-24 lg:px-60 flex-shrink-0'>
+        <header className='flex items-center justify-between border-b bg-card px-4 py-2 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex-shrink-0'>
           <div className='w-full max-w-6xl mx-auto'>
             <div className='flex items-center gap-4'>
               <div>
@@ -35,7 +35,7 @@ export function Layout() {
         </header>
 
         {/* Search Stocks Section */}
-        <main className='bg-card px-4 py-3 md:px-24 lg:px-60 flex-shrink-0'>
+        <main className='bg-card px-4 py-2 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex-shrink-0'>
           <div className='w-full max-w-6xl mx-auto'>
             <Card>
               <CardContent className='space-y-4 mt-4'>
@@ -55,8 +55,8 @@ export function Layout() {
         </main>
 
         {/* Footer */}
-        <footer className='border-t bg-card px-4 py-2 md:px-24 lg:px-48 flex-shrink-0'>
-          <div className='w-full max-w-5xl mx-auto'>
+        <footer className='border-t bg-card px-4 py-2 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex-shrink-0'>
+          <div className='w-full max-w-6xl mx-auto'>
             <div className='flex flex-col items-center justify-center space-y-1 text-center'>
               <p className='text-xs text-muted-foreground'>
                 © 2025 Romilly Eveleigh Stock Price Dashboard
