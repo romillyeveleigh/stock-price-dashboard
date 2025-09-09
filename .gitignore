@@ -54,7 +54,6 @@ ehthumbs.db
 *~
 
 # Package manager files
-package-lock.json
 yarn-error.log
 
 # TypeScript
