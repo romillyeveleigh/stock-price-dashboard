@@ -10,8 +10,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useStockSelection } from '@/hooks';
 import { APP_CONFIG } from '@/lib';
-// import { APP_CONFIG } from '@/lib'; // Used in component logic
-// import type { Stock } from '@/types'; // Used for type definitions
 
 interface SelectedStocksProps {
   className?: string;

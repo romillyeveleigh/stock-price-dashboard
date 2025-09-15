@@ -1,6 +1,5 @@
 /**
  * Main Layout component with responsive design
- * Handles mobile bottom drawer layouts
  */
 
 import { Label } from '@radix-ui/react-label';
