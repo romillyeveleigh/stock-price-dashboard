@@ -19,4 +19,9 @@ export {
 } from './config';
 
 // Constants
-export { PRICE_TYPES, DEFAULT_PRICE_TYPE, HTTP_STATUS } from './constants';
+export {
+  PRICE_TYPES,
+  DEFAULT_PRICE_TYPE,
+  HTTP_STATUS,
+  DEFAULT_SMA_PERIOD,
+} from './constants';

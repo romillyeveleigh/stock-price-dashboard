@@ -6,7 +6,7 @@
 import { subMonths } from 'date-fns';
 import React, { createContext, useContext, useReducer } from 'react';
 
-import { APP_CONFIG, DEFAULT_PRICE_TYPE } from '@/lib';
+import { APP_CONFIG, DEFAULT_PRICE_TYPE, DEFAULT_SMA_PERIOD } from '@/lib';
 import type {
   AppState,
   AppAction,
@@ -23,6 +23,7 @@ const initialState: AppState = {
     from: subMonths(new Date(), 1),
     to: new Date(),
   },
+  smaPeriod: DEFAULT_SMA_PERIOD,
   priceType: DEFAULT_PRICE_TYPE,
   chartData: [],
   loading: false,
@@ -75,6 +76,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
         error: null,
       };
 
+    case 'SET_SMA_PERIOD':
+      return {
+        ...state,
+        smaPeriod: action.payload,
+        error: null,
+      };
+
     case 'SET_PRICE_TYPE':
       return {
         ...state,
@@ -116,6 +124,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
           from: subMonths(new Date(), 1),
           to: new Date(),
         },
+        smaPeriod: DEFAULT_SMA_PERIOD,
         priceType: DEFAULT_PRICE_TYPE,
         chartData: [],
         loading: false,
@@ -137,6 +146,7 @@ interface AppContextType {
   removeStock: (symbol: string) => void;
   setDateRange: (from: Date, to: Date) => void;
   setPriceType: (priceType: PriceType) => void;
+  setSmaPeriod: (period: number) => void;
   setChartData: (data: StockPriceData[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -172,6 +182,10 @@ export function AppProvider({ children }: AppProviderProps) {
     dispatch({ type: 'SET_PRICE_TYPE', payload: priceType });
   };
 
+  const setSmaPeriod = (period: number) => {
+    dispatch({ type: 'SET_SMA_PERIOD', payload: period });
+  };
+
   const setChartData = (data: StockPriceData[]) => {
     dispatch({ type: 'SET_CHART_DATA', payload: data });
   };
@@ -199,6 +213,7 @@ export function AppProvider({ children }: AppProviderProps) {
     removeStock,
     setDateRange,
     setPriceType,
+    setSmaPeriod,
     setChartData,
     setLoading,
     setError,

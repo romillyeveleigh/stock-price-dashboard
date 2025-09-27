@@ -30,7 +30,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
 
   // Fetch stock price data for all selected stocks
   const {
-    data: stockPricesData = [],
+    data = [],
     isLoading,
     isError,
     errors,
@@ -49,7 +49,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
     const series: Highcharts.SeriesOptionsType[] = [];
 
     // Create price series for each stock
-    stockPricesData.forEach((stockData: StockPriceData, index: number) => {
+    data.forEach((stockData: StockPriceData, index: number) => {
       if (!stockData || !stockData.data || stockData.data.length === 0) return;
 
       const priceData = stockData.data.map(point => [
@@ -109,6 +109,38 @@ export function StockChart({ className = '', height }: StockChartProps) {
         },
         lineWidth: 1,
         fillOpacity: 0.1,
+      } as Highcharts.SeriesAreaOptions);
+
+      // Add moving average series
+      const mvaData = stockData.data.map((point, index) => {
+        const { smaPeriod, priceType } = state;
+        if (index < smaPeriod - 1)
+          return [new Date(point.date).getTime(), null];
+        let mva = 0;
+        for (let i = 0; i < smaPeriod; i++) {
+          mva += stockData.data[index - i][priceType];
+        }
+        mva = mva / smaPeriod;
+        return [new Date(point.date).getTime(), mva];
+      });
+
+      series.push({
+        color: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
+        name: stockData.symbol + ` SMA`,
+        data: mvaData,
+        yAxis: 0,
+        showInLegend: true,
+
+        marker: {
+          enabled: false,
+          states: {
+            hover: {
+              enabled: true,
+              radius: 4,
+            },
+          },
+        },
+        lineWidth: 1,
       } as Highcharts.SeriesAreaOptions);
     });
 
@@ -298,7 +330,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
         enabled: false,
       },
     };
-  }, [stockPricesData, state.priceType, height, isMobile, isTablet]);
+  }, [data, state.priceType, height, isMobile, isTablet]);
 
   // Handle chart cleanup
   useEffect(() => {
@@ -350,8 +382,8 @@ export function StockChart({ className = '', height }: StockChartProps) {
 
   // No data state - stocks selected but no data available
   if (
-    stockPricesData.length === 0 ||
-    stockPricesData.every(data => !data || data.data.length === 0)
+    data.length === 0 ||
+    data.every(data => !data || data.data.length === 0)
   ) {
     return (
       <NoDataAvailable

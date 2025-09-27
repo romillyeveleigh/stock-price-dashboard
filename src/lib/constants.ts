@@ -15,6 +15,9 @@ export const PRICE_TYPES: Array<{ value: PriceType; label: string }> = [
 // Default price type
 export const DEFAULT_PRICE_TYPE: PriceType = 'close';
 
+// Default SMA period
+export const DEFAULT_SMA_PERIOD: number = 3;
+
 // HTTP status codes
 export const HTTP_STATUS = {
   OK: 200,
