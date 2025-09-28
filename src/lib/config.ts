@@ -44,7 +44,7 @@ export const APP_CONFIG = {
   DEFAULT_STOCK: 'AAPL',
 
   // Date ranges
-  DEFAULT_DATE_RANGE_DAYS: 30,
+  DEFAULT_DATE_RANGE_DAYS: 365,
   MAX_DATE_RANGE_YEARS: 5,
 
   // Chart configuration

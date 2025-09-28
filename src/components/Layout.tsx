@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DateRangePicker } from './DateRangePicker';
 import { PriceTypeToggle } from './PriceTypeToggle';
 import { SelectedStocks } from './SelectedStocks';
+import { SmaPeriodPicker } from './SmaPeriodPicker';
 import { StockChart } from './StockChart';
 import { StockSearch } from './StockSearch';
 
@@ -60,6 +61,14 @@ export function Layout() {
                     Price Type
                   </Label>
                   <PriceTypeToggle className='mt-2' />
+                </div>
+
+                {/* Sma Period */}
+                <div>
+                  <Label htmlFor='sma-period' className='text-sm font-medium'>
+                    Simple Moving Average
+                  </Label>
+                  <SmaPeriodPicker className='mt-2' />
                 </div>
 
                 {/* Stock Chart */}

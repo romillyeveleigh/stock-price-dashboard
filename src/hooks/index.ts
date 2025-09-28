@@ -14,6 +14,7 @@ export {
 export { useStockSelection } from './useStockSelection';
 export { useDateRange } from './useDateRange';
 export { usePriceType } from './usePriceType';
+export { useSmaPeriod } from './useSmaPeriod';
 export { useUrlSync } from './useUrlSync';
 
 // Utility hooks

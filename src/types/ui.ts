@@ -13,7 +13,7 @@ export interface AppState {
   selectedStocks: Stock[];
   dateRange: DateRange;
   priceType: PriceType;
-  smaPeriod: number;
+  smaPeriod: number | null;
   chartData: StockPriceData[];
   loading: boolean;
   error: string | null;
@@ -26,7 +26,7 @@ export type AppAction =
   | { type: 'REMOVE_STOCK'; payload: string }
   | { type: 'SET_DATE_RANGE'; payload: DateRange }
   | { type: 'SET_PRICE_TYPE'; payload: PriceType }
-  | { type: 'SET_SMA_PERIOD'; payload: number }
+  | { type: 'SET_SMA_PERIOD'; payload: number | null }
   | { type: 'SET_CHART_DATA'; payload: StockPriceData[] }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }

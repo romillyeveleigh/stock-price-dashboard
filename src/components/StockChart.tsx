@@ -11,8 +11,9 @@ import { ChartEmptyState, NoDataAvailable } from '@/components/EmptyStates';
 import { ChartError } from '@/components/ErrorStates';
 import { ChartLoadingSkeleton } from '@/components/LoadingStates';
 import { useAppContext } from '@/contexts/AppContext';
-import { useMultipleStockPrices, useResponsive } from '@/hooks';
+import { useMultipleStockPrices, useResponsive, useSmaPeriod } from '@/hooks';
 import { APP_CONFIG } from '@/lib';
+import { calculateSimpleMovingAverage } from '@/lib/utils';
 import type { StockPriceData } from '@/types';
 
 interface StockChartProps {
@@ -24,7 +25,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
   const { state } = useAppContext();
   const chartRef = useRef<HighchartsReact.RefObject>(null);
   const { isMobile, isTablet } = useResponsive();
-
+  const { smaPeriod } = useSmaPeriod();
   // Get stock symbols for API calls
   const stockSymbols = state.selectedStocks.map(stock => stock.symbol);
 
@@ -59,6 +60,9 @@ export function StockChart({ className = '', height }: StockChartProps) {
 
       const baseColor =
         APP_CONFIG.CHART_COLORS[index % APP_CONFIG.CHART_COLORS.length];
+
+      const smaColor =
+        APP_CONFIG.CHART_COLORS[index + (1 % APP_CONFIG.CHART_COLORS.length)];
 
       // Convert hex color to RGB for gradient
       const hexToRgb = (hex: string) => {
@@ -111,26 +115,16 @@ export function StockChart({ className = '', height }: StockChartProps) {
         fillOpacity: 0.1,
       } as Highcharts.SeriesAreaOptions);
 
-      // Add moving average series
-      const mvaData = stockData.data.map((point, index) => {
-        const { smaPeriod, priceType } = state;
-        if (index < smaPeriod - 1)
-          return [new Date(point.date).getTime(), null];
-        let mva = 0;
-        for (let i = 0; i < smaPeriod; i++) {
-          mva += stockData.data[index - i][priceType];
-        }
-        mva = mva / smaPeriod;
-        return [new Date(point.date).getTime(), mva];
-      });
-
       series.push({
-        color: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
-        name: stockData.symbol + ` SMA`,
-        data: mvaData,
+        color: smaColor,
+        name: stockData.symbol + ` ${smaPeriod}D SMA`,
+        data: calculateSimpleMovingAverage(
+          stockData.data,
+          smaPeriod,
+          state.priceType
+        ),
         yAxis: 0,
         showInLegend: true,
-
         marker: {
           enabled: false,
           states: {
@@ -140,7 +134,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
             },
           },
         },
-        lineWidth: 1,
+        lineWidth: 0.5,
       } as Highcharts.SeriesAreaOptions);
     });
 
@@ -330,7 +324,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
         enabled: false,
       },
     };
-  }, [data, state.priceType, height, isMobile, isTablet]);
+  }, [data, state.priceType, height, isMobile, isTablet, smaPeriod]);
 
   // Handle chart cleanup
   useEffect(() => {

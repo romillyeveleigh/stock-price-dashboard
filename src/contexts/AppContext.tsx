@@ -7,6 +7,7 @@ import { subMonths } from 'date-fns';
 import React, { createContext, useContext, useReducer } from 'react';
 
 import { APP_CONFIG, DEFAULT_PRICE_TYPE, DEFAULT_SMA_PERIOD } from '@/lib';
+import { DEFAULT_STOCKS } from '@/lib/constants';
 import type {
   AppState,
   AppAction,
@@ -17,10 +18,10 @@ import type {
 
 // Initial state with defaults
 const initialState: AppState = {
-  selectedStocks: [],
+  selectedStocks: DEFAULT_STOCKS,
   dateRange: {
-    // Default to last 30 days as per APP_CONFIG
-    from: subMonths(new Date(), 1),
+    // Default to last 12 months as per APP_CONFIG
+    from: subMonths(new Date(), 12),
     to: new Date(),
   },
   smaPeriod: DEFAULT_SMA_PERIOD,
@@ -79,7 +80,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_SMA_PERIOD':
       return {
         ...state,
-        smaPeriod: action.payload,
+        smaPeriod: action.payload === state.smaPeriod ? null : action.payload,
         error: null,
       };
 
@@ -146,7 +147,7 @@ interface AppContextType {
   removeStock: (symbol: string) => void;
   setDateRange: (from: Date, to: Date) => void;
   setPriceType: (priceType: PriceType) => void;
-  setSmaPeriod: (period: number) => void;
+  setSmaPeriod: (period: number | null) => void;
   setChartData: (data: StockPriceData[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -182,7 +183,7 @@ export function AppProvider({ children }: AppProviderProps) {
     dispatch({ type: 'SET_PRICE_TYPE', payload: priceType });
   };
 
-  const setSmaPeriod = (period: number) => {
+  const setSmaPeriod = (period: number | null) => {
     dispatch({ type: 'SET_SMA_PERIOD', payload: period });
   };
 

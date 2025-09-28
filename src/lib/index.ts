@@ -22,6 +22,7 @@ export {
 export {
   PRICE_TYPES,
   DEFAULT_PRICE_TYPE,
+  SMA_PERIODS,
   HTTP_STATUS,
   DEFAULT_SMA_PERIOD,
 } from './constants';
