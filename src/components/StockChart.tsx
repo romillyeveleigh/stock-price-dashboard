@@ -124,7 +124,7 @@ export function StockChart({ className = '', height }: StockChartProps) {
           state.priceType
         ),
         yAxis: 0,
-        showInLegend: true,
+        showInLegend: Boolean(smaPeriod),
         marker: {
           enabled: false,
           states: {
