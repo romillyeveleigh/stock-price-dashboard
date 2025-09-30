@@ -194,7 +194,6 @@ export class PolygonApiService {
         signal: controller.signal,
         headers: {
           Accept: 'application/json',
-          'User-Agent': 'StockDashboard/1.0',
         },
       });
 
